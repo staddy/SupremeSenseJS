@@ -5,12 +5,13 @@ ENTITY.tryMove = function(e, xa, ya) {
     if(WORLD.isFree(e.x + xa, e.y, e.width, e.height)) {
         e.x += xa;
     } else {
-        e.hitWall(xa, 0);
+        e.hitWall(e, xa, 0);
+        var xx;
         if(xa < 0) {
-            var xx = e.x / WORLD.TILE;
+            xx = e.x / WORLD.TILE;
             xa = -(xx - Math.floor(xx)) * WORLD.TILE;
         } else {
-            var xx = (e.x + e.width) / 10;
+            xx = (e.x + e.width) / 10;
             xa = WORLD.TILE - (xx - Math.floor(xx)) * WORLD.TILE;
         }
         if (WORLD.isFree(e.x + xa, e.y, e.width, e.height)) {
@@ -22,19 +23,41 @@ ENTITY.tryMove = function(e, xa, ya) {
         e.y += ya;
     } else {
         if(ya > 0) e.onGround = true;
-        e.hitWall(0, ya);
+        e.hitWall(e, 0, ya);
+        var yy;
         if(ya < 0) {
-            var yy = e.y / WORLD.TILE;
+            yy = e.y / WORLD.TILE;
             ya = -(yy - Math.floor(yy)) * WORLD.TILE;
         } else {
-            var yy = (e.y + e.height) / WORLD.TILE;
+            yy = (e.y + e.height) / WORLD.TILE;
             ya = WORLD.TILE - (yy - Math.floor(yy)) * WORLD.TILE;
         }
-        if(level.isFree(e.x, e.y + ya, e.width, e.height)) {
+        if(WORLD.isFree(e.x, e.y + ya, e.width, e.height)) {
             e.y += ya;
         }
         e.vy *= -e.bounce;
     }
-}
+};
+
+ENTITY.setPlayer = function(x, y) {
+    var player = {};
+    player.onGround = false;
+    player.x = x;
+    player.y = y;
+    player.vx = 0;
+    player.vy = 0;
+    player.bounce = 0;
+    player.speed = 1;
+    player.tick = function(e) {
+        ENTITY.tryMove(e, vx, vy);
+    };
+    player.hitWall = function(e, xa, ya) {
+
+    };
+    player.collide = function(e, b) {
+
+    };
+    return player;
+};
 
 

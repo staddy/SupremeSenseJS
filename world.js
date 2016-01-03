@@ -10,13 +10,14 @@ WORLD.loadLevel = function() {
     WORLD.X = 80;
     WORLD.Y = 60;
     WORLD.TILE = 10;
+    WORLD.GRAVITY = 1.0;
     WORLD.blocks = new Array(WORLD.X);
     for(var i = 0; i < WORLD.X; ++i) {
         WORLD.blocks[i] = new Array(WORLD.Y);
         for(var j = 0; j < WORLD.Y; ++j)
             WORLD.blocks[i][j] = 0;
     }
-}
+};
 
 WORLD.isFree = function(x, y, width, height) {
     var x1 = Math.floor(x / WORLD.TILE);
@@ -41,7 +42,7 @@ WORLD.isFree = function(x, y, width, height) {
                 return false;
 
     return true;
-}
+};
 
 WORLD.areCollide = function(r1, r2) {
     //Define the variables we'll need to calculate
@@ -73,27 +74,21 @@ WORLD.areCollide = function(r1, r2) {
     //Check for a collision on the x axis
     if (Math.abs(vx) < combinedHalfWidths) {
         //A collision might be occuring. Check for a collision on the y axis
-        if (Math.abs(vy) < combinedHalfHeights) {
-            //There's definitely a collision happening
-            hit = true;
-        } else {
-            //There's no collision on the y axis
-            hit = false;
-        }
+        hit = Math.abs(vy) < combinedHalfHeights;
     } else {
         //There's no collision on the x axis
         hit = false;
     }
     //`hit` will be either `true` or `false`
     return hit;
-}
+};
 
 WORLD.tick = function() {
     WORLD.enemyBullets.forEach(
         function(b) {
             if(WORLD.areCollide(b, WORLD.player)) {
-                WORLD.player.collide(b);
-                b.collide();
+                WORLD.player.collide(WORLD.player, b);
+                b.collide(b, WORLD.player);
             }
         }
     );
@@ -102,21 +97,21 @@ WORLD.tick = function() {
             WORLD.enemies.forEach(
                 function(e) {
                     if(WORLD.areCollide(b, e)) {
-                        e.collide(b);
-                        b.collide(e);
+                        e.collide(e, b);
+                        b.collide(b, e);
                     }
                 }
             )
         }
-    )
-    WORLD.player.tick();
+    );
+    WORLD.player.tick(WORLD.player);
     for(var i = 0; i < WORLD.entities.length; ++i) {
-        var e = entities[i];
+        var e = ENTITY.entities[i];
         if(!e.removed)
-            e.tick();
+            e.tick(e);
         else {
             WORLD.entities.splice(i--, 1);
             e.category.remove(e);
         }
     }
-}
+};

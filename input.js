@@ -12,34 +12,34 @@ INPUT.KEY = {
 
 INPUT.down = [false, false, false, false, false];
 
-LEVEL.onkey = function(ev, key, down) {
+INPUT.onkey = function(ev, key, down) {
     var KEY = INPUT.KEY;
     var input = INPUT.down;
     switch(key) {
-        case KEY.SPACE:
-            KEYS[KEY.SPACE.n] = down;
+        case KEY.SPACE.code:
+            input[KEY.SPACE.n] = down;
             ev.preventDefault();
             return false;
-        case KEY.W:
-        case KEY.UP:
+        case KEY.W.code:
+        case KEY.UP.code:
             input[KEY.UP.n] = down;
             ev.preventDefault();
             return false;
-        case KEY.S:
-        case KEY.DOWN:
+        case KEY.S.code:
+        case KEY.DOWN.code:
             input[KEY.DOWN.n] = down;
             ev.preventDefault();
             return false;
-        case KEY.LEFT:
+        case KEY.LEFT.code:
             input[KEY.LEFT.n] = down;
             ev.preventDefault();
             return false;
-        case KEY.RIGHT:
+        case KEY.RIGHT.code:
             input[KEY.RIGHT.n] = down;
             ev.preventDefault();
             return false;
     }
-}
+};
 
-document.addEventListener('keydown', function(ev) { return LEVEL.onkey(ev, ev.keyCode, true);  }, false);
-document.addEventListener('keyup',   function(ev) { return LEVEL.onkey(ev, ev.keyCode, false); }, false);
+document.addEventListener('keydown', function(ev) { return INPUT.onkey(ev, ev.keyCode, true);  }, false);
+document.addEventListener('keyup',   function(ev) { return INPUT.onkey(ev, ev.keyCode, false); }, false);
