@@ -18,7 +18,7 @@ WORLD.loadLevel = function() {
     }
 }
 
-WORLD.isBlocked = function(x, y, width, height) {
+WORLD.isFree = function(x, y, width, height) {
     var x1 = Math.floor(x / WORLD.TILE);
     if(x1 < 0) x1 = 0;
 
@@ -38,9 +38,9 @@ WORLD.isBlocked = function(x, y, width, height) {
     for(var i = x1; i < x2; ++i)
         for(var j = y1; j < y2; ++j)
             if(WORLD.blocks[i][j] == 1)
-                return true;
+                return false;
 
-    return false;
+    return true;
 }
 
 WORLD.areCollide = function(r1, r2) {
