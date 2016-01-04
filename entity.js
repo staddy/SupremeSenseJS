@@ -39,17 +39,30 @@ ENTITY.tryMove = function(e, xa, ya) {
     }
 };
 
-ENTITY.setPlayer = function(x, y) {
-    var player = {};
+ENTITY.setPlayer = function(player, x, y) {
     player.onGround = false;
     player.x = x;
     player.y = y;
     player.vx = 0;
     player.vy = 0;
     player.bounce = 0;
-    player.speed = 1;
+    player.speed = 4;
+    player.jumpSpeed = 8;
     player.tick = function(e) {
-        ENTITY.tryMove(e, vx, vy);
+        if(e.onGround) {
+            if(INPUT.down[INPUT.KEY.RIGHT.n])
+                e.vx = e.speed;
+            else if(INPUT.down[INPUT.KEY.LEFT.n])
+                e.vx = -e.speed;
+            else
+                e.vx = 0;
+            if(INPUT.down[INPUT.KEY.UP.n])
+                e.vy = -e.jumpSpeed;
+        }
+        e.vy += WORLD.GRAVITY;
+        if(Math.abs(e.vy) >= WORLD.MAXSPEED) e.vy = Math.sign(e.vy) * WORLD.MAXSPEED;
+        if(Math.abs(e.vx) >= WORLD.MAXSPEED) e.vx = Math.sign(e.vx) * WORLD.MAXSPEED;
+        ENTITY.tryMove(e, e.vx, e.vy);
     };
     player.hitWall = function(e, xa, ya) {
 
@@ -57,7 +70,6 @@ ENTITY.setPlayer = function(x, y) {
     player.collide = function(e, b) {
 
     };
-    return player;
 };
 
 

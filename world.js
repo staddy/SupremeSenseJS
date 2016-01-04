@@ -10,12 +10,15 @@ WORLD.loadLevel = function() {
     WORLD.X = 80;
     WORLD.Y = 60;
     WORLD.TILE = 10;
-    WORLD.GRAVITY = 1.0;
+    WORLD.GRAVITY = 0.45;
+    WORLD.MAXSPEED = 10;
     WORLD.blocks = new Array(WORLD.X);
     for(var i = 0; i < WORLD.X; ++i) {
         WORLD.blocks[i] = new Array(WORLD.Y);
+        // debug
         for(var j = 0; j < WORLD.Y; ++j)
             WORLD.blocks[i][j] = 0;
+        WORLD.blocks[i][59] = 1;
     }
 };
 
@@ -34,10 +37,10 @@ WORLD.isFree = function(x, y, width, height) {
     var my = (y + height) / WORLD.TILE;
     var y2 = Math.floor(my);
     if((my) == Math.floor(my)) --y2;
-    if(y2 >= WORLD.X) y2 = WORLD.Y - 1;
+    if(y2 >= WORLD.Y) y2 = WORLD.Y - 1;
 
-    for(var i = x1; i < x2; ++i)
-        for(var j = y1; j < y2; ++j)
+    for(var i = x1; i <= x2; ++i)
+        for(var j = y1; j <= y2; ++j)
             if(WORLD.blocks[i][j] == 1)
                 return false;
 

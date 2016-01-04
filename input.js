@@ -6,7 +6,9 @@ INPUT.KEY = {
     UP: {n: 2, code: 38},
     RIGHT: {n: 3, code: 39},
     DOWN: {n: 4, code: 40},
+    A: {n: 1, code: 65},
     W: {n: 2, code: 87},
+    D: {n: 3, code: 68},
     S: {n: 4, code: 83}
 };
 
@@ -30,10 +32,12 @@ INPUT.onkey = function(ev, key, down) {
             input[KEY.DOWN.n] = down;
             ev.preventDefault();
             return false;
+        case KEY.A.code:
         case KEY.LEFT.code:
             input[KEY.LEFT.n] = down;
             ev.preventDefault();
             return false;
+        case KEY.D.code:
         case KEY.RIGHT.code:
             input[KEY.RIGHT.n] = down;
             ev.preventDefault();
