@@ -6,20 +6,38 @@ WORLD.playerBullets = [];
 WORLD.enemyBullets = [];
 WORLD.player = {};
 
-WORLD.loadLevel = function() {
+WORLD.loadLevel = function(scene) {
     WORLD.X = 80;
     WORLD.Y = 60;
     WORLD.TILE = 10;
     WORLD.GRAVITY = 0.45;
     WORLD.MAXSPEED = 10;
     WORLD.blocks = new Array(WORLD.X);
+    WORLD.sprites = new Array(WORLD.X);
+    WORLD.textures = [null, new PIXI.Texture.fromImage('images/wall.png')];
     for(var i = 0; i < WORLD.X; ++i) {
         WORLD.blocks[i] = new Array(WORLD.Y);
+        WORLD.sprites[i] = new Array(WORLD.Y);
         // debug
-        for(var j = 0; j < WORLD.Y; ++j)
-            WORLD.blocks[i][j] = 0;
-        WORLD.blocks[i][59] = 1;
+        for(var j = 0; j < WORLD.Y; ++j) {
+            WORLD.sprites[i][j] = new PIXI.Sprite();
+            WORLD.sprites[i][j].x = i * WORLD.TILE;
+            WORLD.sprites[i][j].y = j * WORLD.TILE;
+            scene.addChild(WORLD.sprites[i][j]);
+            WORLD.setBlock(i, j, 0);
+        }
+        WORLD.setBlock(i, 59, 1);
+        WORLD.setBlock(i, 58, 1);
     }
+    WORLD.setBlock(4, 57, 1);
+    WORLD.setBlock(4, 56, 1);
+    WORLD.setBlock(5, 57, 1);
+};
+
+WORLD.setBlock = function(x, y, b) {
+    WORLD.blocks[x][y] = b;
+    WORLD.sprites[x][y].texture = WORLD.textures[b];
+    WORLD.sprites[x][y].visible = (b != 0);
 };
 
 WORLD.isFree = function(x, y, width, height) {

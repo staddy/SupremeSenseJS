@@ -49,7 +49,7 @@ ENTITY.setPlayer = function(player, x, y) {
     player.speed = 4;
     player.jumpSpeed = 8;
     player.tick = function(e) {
-        if(e.onGround) {
+        if(/*e.onGround*/true) {
             if(INPUT.down[INPUT.KEY.RIGHT.n])
                 e.vx = e.speed;
             else if(INPUT.down[INPUT.KEY.LEFT.n])
