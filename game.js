@@ -10,6 +10,9 @@ var WIDTH = 800, HEIGHT = 600;
 var renderer = PIXI.autoDetectRenderer(WIDTH, HEIGHT, {/*backgroundColor : 0x1099bb*/});
 document.body.appendChild(renderer.view);
 
+// load textures and run setup()
+PIXI.loader.add('images/textures.json').load(setup);
+
 // root of the scene graph
 var stage;
 
@@ -63,5 +66,3 @@ function play() {
 function end() {
 
 }
-
-setup();

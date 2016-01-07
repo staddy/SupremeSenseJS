@@ -16,14 +16,14 @@ WORLD.loadLevel = function(scene) {
     WORLD.MAXSPEED = 10;
 
     // Background
-    WORLD.background = new PIXI.Sprite(new PIXI.Texture.fromImage('images/background.png'));
+    WORLD.background = new PIXI.Sprite(PIXI.Texture.fromFrame('background.png'));
     WORLD.background.scale.x = WORLD.background.scale.y = 4;
     WORLD.background.y = -200;
     scene.addChild(WORLD.background);
 
     WORLD.blocks = new Array(WORLD.X);
     WORLD.sprites = new Array(WORLD.X);
-    WORLD.textures = [null, new PIXI.Texture.fromImage('images/wall.png')];
+    WORLD.textures = [null, PIXI.Texture.fromFrame('wall.png')];
     for(var i = 0; i < WORLD.X; ++i) {
         WORLD.blocks[i] = new Array(WORLD.Y);
         WORLD.sprites[i] = new Array(WORLD.Y);

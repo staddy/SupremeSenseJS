@@ -40,7 +40,7 @@ ENTITY.tryMove = function(e, xa, ya) {
 };
 
 ENTITY.setPlayer = function(scene, x, y) {
-    WORLD.player = new PIXI.Sprite(new PIXI.Texture.fromImage('images/wall.png'));
+    WORLD.player = new PIXI.Sprite(PIXI.Texture.fromFrame('wall.png'));
     var player = WORLD.player;
     scene.addChild(WORLD.player);
     player.scale.x = 2;
