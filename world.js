@@ -9,9 +9,18 @@ WORLD.player = {};
 WORLD.loadLevel = function(scene) {
     WORLD.X = 80;
     WORLD.Y = 60;
+    WORLD.WIDTH = 800;
+    WORLD.HEIGHT = 600;
     WORLD.TILE = 10;
     WORLD.GRAVITY = 0.45;
     WORLD.MAXSPEED = 10;
+
+    // Background
+    WORLD.background = new PIXI.Sprite(new PIXI.Texture.fromImage('images/background.png'));
+    WORLD.background.scale.x = WORLD.background.scale.y = 4;
+    WORLD.background.y = -200;
+    scene.addChild(WORLD.background);
+
     WORLD.blocks = new Array(WORLD.X);
     WORLD.sprites = new Array(WORLD.X);
     WORLD.textures = [null, new PIXI.Texture.fromImage('images/wall.png')];
@@ -127,12 +136,24 @@ WORLD.tick = function() {
     );
     WORLD.player.tick(WORLD.player);
     for(var i = 0; i < WORLD.entities.length; ++i) {
-        var e = ENTITY.entities[i];
+        var e = WORLD.entities[i];
         if(!e.removed)
             e.tick(e);
         else {
             WORLD.entities.splice(i--, 1);
-            e.category.remove(e);
+            switch(e.category) {
+                case ENTITY.CATEGORIES.ENEMY:
+                    WORLD.enemies.splice(e.index, 1);
+                    break;
+                case ENTITY.CATEGORIES.PLAYERBULLET:
+                    WORLD.playerBullets.splice(e.index, 1);
+                    break;
+                case ENTITY.CATEGORIES.ENEMYBULLET:
+                    WORLD.enemyBullets.splice(e.index, 1);
+                    break;
+            }
+            e.visible = false;
+            gameScene.removeChild(e);
         }
     }
 };

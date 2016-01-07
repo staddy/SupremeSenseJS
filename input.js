@@ -14,7 +14,7 @@ INPUT.KEY = {
 
 INPUT.down = [false, false, false, false, false];
 
-INPUT.onkey = function(ev, key, down) {
+INPUT.onKey = function(ev, key, down) {
     var KEY = INPUT.KEY;
     var input = INPUT.down;
     switch(key) {
@@ -45,5 +45,32 @@ INPUT.onkey = function(ev, key, down) {
     }
 };
 
-document.addEventListener('keydown', function(ev) { return INPUT.onkey(ev, ev.keyCode, true);  }, false);
-document.addEventListener('keyup',   function(ev) { return INPUT.onkey(ev, ev.keyCode, false); }, false);
+document.addEventListener('keydown', function(ev) { return INPUT.onKey(ev, ev.keyCode, true);  }, false);
+document.addEventListener('keyup',   function(ev) { return INPUT.onKey(ev, ev.keyCode, false); }, false);
+
+INPUT.initMouseEvents = function(stage) {
+    stage.interactive = true;
+    stage.hitArea = new PIXI.Rectangle(0, 0, WIDTH, HEIGHT);
+    stage.mousedown = INPUT.onMouseDown;
+    stage.touchstart = INPUT.onTouch;
+};
+
+INPUT.onMouseDown = function(eventData) {
+    //eventData.preventDefault();
+
+    var ex = eventData.data.originalEvent.offsetX;
+    var ey = eventData.data.originalEvent.offsetY;
+    INPUT.onDown(ex, ey);
+};
+
+INPUT.onTouch = function(eventData) {
+    //eventData.preventDefault();
+
+    var ex = eventData.data.originalEvent.touches[0].pageX;
+    var ey = eventData.data.originalEvent.touches[0].pageY;
+    INPUT.onDown(ex, ey);
+};
+
+INPUT.onDown = function(ex, ey) {
+    ENTITY.playerBullet(gameScene, WORLD.player.x, WORLD.player.y, ex, ey);
+};

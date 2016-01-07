@@ -39,7 +39,12 @@ ENTITY.tryMove = function(e, xa, ya) {
     }
 };
 
-ENTITY.setPlayer = function(player, x, y) {
+ENTITY.setPlayer = function(scene, x, y) {
+    WORLD.player = new PIXI.Sprite(new PIXI.Texture.fromImage('images/wall.png'));
+    var player = WORLD.player;
+    scene.addChild(WORLD.player);
+    player.scale.x = 2;
+    player.scale.y = 2;
     player.onGround = false;
     player.x = x;
     player.y = y;
@@ -48,14 +53,15 @@ ENTITY.setPlayer = function(player, x, y) {
     player.bounce = 0;
     player.speed = 4;
     player.jumpSpeed = 8;
+    player.health = 100.0;
     player.tick = function(e) {
-        if(/*e.onGround*/true) {
-            if(INPUT.down[INPUT.KEY.RIGHT.n])
-                e.vx = e.speed;
-            else if(INPUT.down[INPUT.KEY.LEFT.n])
-                e.vx = -e.speed;
-            else
-                e.vx = 0;
+        if(INPUT.down[INPUT.KEY.RIGHT.n])
+            e.vx = e.speed;
+        else if(INPUT.down[INPUT.KEY.LEFT.n])
+            e.vx = -e.speed;
+        else
+            e.vx = 0;
+        if(e.onGround) {
             if(INPUT.down[INPUT.KEY.UP.n])
                 e.vy = -e.jumpSpeed;
         }
@@ -71,5 +77,43 @@ ENTITY.setPlayer = function(player, x, y) {
 
     };
 };
+
+ENTITY.playerBullet = function(scene, x1, y1, x2, y2) {
+    var bulletSpeed = 8.0;
+    var k = ((x2 - x1) / (y2 - y1));
+    //alert(Math.atan(k) / Math.PI * 180);
+    var bya = bulletSpeed * Math.sqrt(1 / (1 + k*k)) * ((y2 - y1) > 0 ? 1 : -1);
+    var bxa = bya * k;
+    var bullet = new PIXI.Graphics();
+    bullet.lineStyle(2, 0xFFFFFF, 1);
+    bullet.moveTo(0, 0);
+    bullet.lineTo(5, 0);
+    bullet.x = x1;
+    bullet.y = y1;
+    bullet.rotation = Math.atan(1/k);
+    bullet.vx = bxa;
+    bullet.vy = bya;
+
+    bullet.removed = false;
+    bullet.tick = function(e) {
+        ENTITY.tryMove(e, e.vx, e.vy);
+        if(e.x < 0 || e.y < 0 || e.x > WORLD.WIDTH|| e.y > WORLD.HEIGHT)
+            e.removed = true;
+    };
+    bullet.hitWall = function(e, xa, ya) {
+        e.removed = true;
+    };
+    bullet.collide = function(b, e) {b.removed = true;};
+
+    WORLD.playerBullets.push(bullet);
+    bullet.category = ENTITY.CATEGORIES.PLAYERBULLET;
+    bullet.index = WORLD.entities.length;
+    WORLD.entities.push(bullet);
+    scene.addChild(bullet);
+};
+
+ENTITY.CATEGORIES = {NONE: 0, ENEMY: 1, PLAYERBULLET: 2, ENEMYBULLET: 3};
+
+
 
 

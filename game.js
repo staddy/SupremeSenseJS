@@ -7,7 +7,7 @@ PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
 var WIDTH = 800, HEIGHT = 600;
 
 // renderer
-var renderer = PIXI.autoDetectRenderer(WIDTH, HEIGHT, {backgroundColor : 0x1099bb});
+var renderer = PIXI.autoDetectRenderer(WIDTH, HEIGHT, {/*backgroundColor : 0x1099bb*/});
 document.body.appendChild(renderer.view);
 
 // root of the scene graph
@@ -21,6 +21,7 @@ var state;
 
 function setup() {
     stage = new PIXI.Container();
+    INPUT.initMouseEvents(stage);
 
     gameScene = new PIXI.Container();
     stage.addChild(gameScene);
@@ -32,11 +33,8 @@ function setup() {
     WORLD.player.lineStyle(2, 0x0000FF, 1);
     WORLD.player.beginFill(0xFF700B, 1);
     WORLD.player.drawRect(0, 0, 20, 10);*/
-    WORLD.player = new PIXI.Sprite(new PIXI.Texture.fromImage('images/wall.png'));
-    WORLD.player.x = 200;
-    WORLD.player.y = 200;
-    ENTITY.setPlayer(WORLD.player, 200, 200);
-    gameScene.addChild(WORLD.player);
+
+    ENTITY.setPlayer(gameScene, 200, 200);
 
     state = play;
 
