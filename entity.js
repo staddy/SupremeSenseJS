@@ -80,17 +80,22 @@ ENTITY.setPlayer = function(scene, x, y) {
 
 ENTITY.playerBullet = function(scene, x1, y1, x2, y2) {
     var bulletSpeed = 8.0;
-    var k = ((x2 - x1) / (y2 - y1));
-    //alert(Math.atan(k) / Math.PI * 180);
-    var bya = bulletSpeed * Math.sqrt(1 / (1 + k*k)) * ((y2 - y1) > 0 ? 1 : -1);
-    var bxa = bya * k;
+    var bya, bxa;
+    if((y2 - y1) != 0) {
+        var k = ((x2 - x1) / (y2 - y1));
+        bya = bulletSpeed * Math.sqrt(1 / (1 + k * k)) * ((y2 - y1) > 0 ? 1 : -1);
+        bxa = bya * k;
+    } else {
+        bya = 0;
+        bxa = bulletSpeed * Math.sign(x2 - x1);
+    }
     var bullet = new PIXI.Graphics();
     bullet.lineStyle(2, 0xFFFFFF, 1);
     bullet.moveTo(0, 0);
     bullet.lineTo(5, 0);
     bullet.x = x1;
     bullet.y = y1;
-    bullet.rotation = Math.atan(1/k);
+    bullet.rotation = (k != 0) ? Math.atan(1/k) : (Math.PI / 2 * Math.sign(y2 - y1));
     bullet.vx = bxa;
     bullet.vy = bya;
 
