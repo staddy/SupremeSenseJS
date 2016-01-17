@@ -5,6 +5,7 @@ var fpsmeter = new FPSMeter({ decimals: 0, graph: true, theme: 'dark', left: '5p
 PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
 
 var WIDTH = 800, HEIGHT = 600;
+var SCALE = 2;
 
 // renderer
 var renderer = PIXI.autoDetectRenderer(WIDTH, HEIGHT, {/*backgroundColor : 0x1099bb*/});
@@ -38,6 +39,7 @@ function setup() {
     WORLD.player.drawRect(0, 0, 20, 10);*/
 
     ENTITY.setPlayer(gameScene, 200, 200);
+    INTERFACE.setup(stage);
 
     state = play;
 

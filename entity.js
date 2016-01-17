@@ -59,7 +59,12 @@ ENTITY.setPlayer = function(scene, x, y) {
     for(var i = 1; i <= 8; ++i) {
         player.sprites.push(PIXI.Texture.fromFrame('character' + i + '.png'));
     }
-    player.texture = player.sprites[3];
+
+    player.sid = 3;
+    player.texture = player.sprites[player.sid];
+    player.running = false;
+    player.time = 0;
+    player.dt = 10;
 
     scene.addChild(WORLD.player);
     player.scale.x = 2;
@@ -74,18 +79,30 @@ ENTITY.setPlayer = function(scene, x, y) {
     player.jumpSpeed = 8;
     player.health = 100.0;
     player.tick = function(e) {
+        if(e.running)
+            ++e.time;
+        if(e.time > e.dt) {
+            ++player.sid;
+            if(player.sid >= 7)
+                player.sid = 0;
+            player.texture = player.sprites[player.sid];
+            e.time = 0;
+        }
         if(INPUT.down[INPUT.KEY.RIGHT.n]) {
             if(!ENTITY.looksRight(this))
                 ENTITY.flip(this);
             e.vx = e.speed;
+            player.running = true;
         }
         else if(INPUT.down[INPUT.KEY.LEFT.n]) {
             if(ENTITY.looksRight(this))
                 ENTITY.flip(this);
             e.vx = -e.speed;
+            player.running = true;
         }
         else {
             e.vx = 0;
+            player.running = false;
         }
         if(e.onGround) {
             if(INPUT.down[INPUT.KEY.UP.n])
