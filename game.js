@@ -11,8 +11,10 @@ var SCALE = 2;
 var renderer = PIXI.autoDetectRenderer(WIDTH, HEIGHT, {/*backgroundColor : 0x1099bb*/});
 document.body.appendChild(renderer.view);
 
+var version = '1';
+
 // load textures and run setup()
-PIXI.loader.add('images/textures.json').load(setup);
+PIXI.loader.add('images/textures.json?v=' + version).load(setup);
 
 // root of the scene graph
 var stage;

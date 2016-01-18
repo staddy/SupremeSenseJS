@@ -7,45 +7,46 @@ WORLD.enemyBullets = [];
 WORLD.player = {};
 
 WORLD.loadLevel = function(scene) {
-    WORLD.X = 80;
-    WORLD.Y = 60;
-    WORLD.WIDTH = 800;
-    WORLD.HEIGHT = 600;
-    WORLD.TILE = 10;
+    WORLD.WIDTH = WIDTH;
+    WORLD.HEIGHT = HEIGHT;
+    WORLD.TILE = 20;
+    WORLD.X = WORLD.WIDTH / WORLD.TILE;
+    WORLD.Y = WORLD.HEIGHT / WORLD.TILE;
     WORLD.GRAVITY = 0.45;
     WORLD.MAXSPEED = 10;
 
     // Background
     WORLD.background = new PIXI.Sprite(PIXI.Texture.fromFrame('background.png'));
-    WORLD.background.scale.x = WORLD.background.scale.y = 4;
-    WORLD.background.y = -200;
+    WORLD.background.scale.x = WORLD.background.scale.y = SCALE;
     scene.addChild(WORLD.background);
 
-    WORLD.blocks = new Array(WORLD.X);
     WORLD.sprites = new Array(WORLD.X);
-    WORLD.textures = [null, PIXI.Texture.fromFrame('wall.png')];
+    WORLD.textures = [
+        [null],
+        [PIXI.Texture.fromFrame('wall.png')],
+        [PIXI.Texture.fromFrame('dirt.png'), PIXI.Texture.fromFrame('dirt.png'), PIXI.Texture.fromFrame('dirt.png'), PIXI.Texture.fromFrame('dirt.png'), PIXI.Texture.fromFrame('dirt.png'), PIXI.Texture.fromFrame('dirt.png'), PIXI.Texture.fromFrame('dirt.png'), PIXI.Texture.fromFrame('rock.png')],
+        [PIXI.Texture.fromFrame('grass.png')]
+    ];
+
+    WORLD.blocks = [[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,1,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,1,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,1,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,1,1,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]];
+
     for(var i = 0; i < WORLD.X; ++i) {
-        WORLD.blocks[i] = new Array(WORLD.Y);
         WORLD.sprites[i] = new Array(WORLD.Y);
-        // debug
         for(var j = 0; j < WORLD.Y; ++j) {
             WORLD.sprites[i][j] = new PIXI.Sprite();
             WORLD.sprites[i][j].x = i * WORLD.TILE;
             WORLD.sprites[i][j].y = j * WORLD.TILE;
+            WORLD.sprites[i][j].scale.x = WORLD.sprites[i][j].scale.y = SCALE;
             scene.addChild(WORLD.sprites[i][j]);
-            WORLD.setBlock(i, j, 0);
+            WORLD.setBlock(i, j, WORLD.blocks[i][j]);
         }
-        WORLD.setBlock(i, 59, 1);
-        WORLD.setBlock(i, 58, 1);
     }
-    WORLD.setBlock(4, 57, 1);
-    WORLD.setBlock(4, 56, 1);
-    WORLD.setBlock(5, 57, 1);
 };
 
 WORLD.setBlock = function(x, y, b) {
     WORLD.blocks[x][y] = b;
-    WORLD.sprites[x][y].texture = WORLD.textures[b];
+    var t = Math.floor(WORLD.textures[b].length * Math.random());
+    WORLD.sprites[x][y].texture = WORLD.textures[b][t];
     WORLD.sprites[x][y].visible = (b != 0);
 };
 
