@@ -58,6 +58,9 @@ ENTITY.setPlayer = function(scene, x, y) {
     WORLD.player = new PIXI.Sprite();
     var player = WORLD.player;
 
+    player.category = ENTITY.CATEGORIES.PLAYER;
+    player.down = false;
+
     player.sprites = [];
     for(var i = 1; i <= 8; ++i) {
         player.sprites.push(PIXI.Texture.fromFrame('character' + i + '.png'));
@@ -82,6 +85,7 @@ ENTITY.setPlayer = function(scene, x, y) {
     player.jumpSpeed = 8;
     player.health = 100.0;
     player.tick = function(e) {
+        e.down = (INPUT.down[INPUT.KEY.DOWN.n] ? player.onGround : false);
         if(e.running)
             ++e.time;
         if(e.time > e.dt) {
@@ -115,6 +119,21 @@ ENTITY.setPlayer = function(scene, x, y) {
         if(Math.abs(e.vy) >= WORLD.MAXSPEED) e.vy = Math.sign(e.vy) * WORLD.MAXSPEED;
         if(Math.abs(e.vx) >= WORLD.MAXSPEED) e.vx = Math.sign(e.vx) * WORLD.MAXSPEED;
         ENTITY.tryMove(e, e.vx, e.vy);
+
+        if(INPUT.down[INPUT.KEY.DOWN.n] && e.onGround) {
+                if (e.height == 40)
+                    e.y += 20;
+                e.height = 20;
+                e.down = true;
+        }
+        else {
+            if(WORLD.isFree(0, -20, e)) {
+                if (e.height == 20)
+                    e.y -= 20;
+                e.height = 40;
+                e.down = false;
+            }
+        }
     };
     player.hitWall = function(e, xa, ya) {
 
@@ -173,7 +192,7 @@ ENTITY.enemyBullet = function(scene, x1, y1, x2, y2) {
     bullet.category = ENTITY.CATEGORIES.ENEMYBULLET;
 };
 
-ENTITY.CATEGORIES = {NONE: 0, ENEMY: 1, PLAYERBULLET: 2, ENEMYBULLET: 3};
+ENTITY.CATEGORIES = {NONE: 0, PLAYER: 1, ENEMY: 2, PLAYERBULLET: 3, ENEMYBULLET: 4};
 
 
 

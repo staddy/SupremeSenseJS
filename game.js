@@ -14,7 +14,7 @@ document.body.appendChild(renderer.view);
 var version = '3';
 
 // load textures and run setup()
-PIXI.loader.add('images/textures.json?v=' + version).load(setup);
+PIXI.loader.add('images/textures.json?v=' + version).add('images/fixedsys.xml').load(setup);
 
 // root of the scene graph
 var stage;
@@ -44,6 +44,11 @@ function setup() {
     INTERFACE.setup(stage);
 
     state = play;
+
+    INTERFACE.phrases.push('раскол сыграл не последнюю роль, и я чувствовал,\nчто все сдохло.');
+    INTERFACE.phrases.push('Я тогда едва выкарабкался из серьезной болезни,\nо которой сейчас говорить неохота, достаточно\nлишь сказать, что этот наш жалкий и утомительный');
+    INTERFACE.phrases.push('Я впервые встретил Дина вскоре после того,\nкак мы с женой расстались.');
+    INTERFACE.tell(stage);
 
     // start fps-meter
     fpsmeter.tickStart();

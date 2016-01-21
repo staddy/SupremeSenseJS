@@ -15,6 +15,11 @@ INPUT.KEY = {
 INPUT.down = [false, false, false, false, false];
 
 INPUT.onKey = function(ev, key, down) {
+    if((state == INTERFACE.telling) && down) {
+        INTERFACE.skip = true;
+        ev.preventDefault();
+        return false;
+    }
     var KEY = INPUT.KEY;
     var input = INPUT.down;
     switch(key) {
@@ -57,6 +62,11 @@ INPUT.initMouseEvents = function(stage) {
 
 INPUT.onMouseDown = function(eventData) {
     //eventData.preventDefault();
+
+    if(state == INTERFACE.telling) {
+        INTERFACE.skip = true;
+        return;
+    }
 
     var ex = eventData.data.originalEvent.offsetX;
     var ey = eventData.data.originalEvent.offsetY;
