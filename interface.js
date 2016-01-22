@@ -7,6 +7,7 @@ INTERFACE.onTell = false;
 INTERFACE.frameAnimationTick = 0;
 INTERFACE.frameAnimationTicks = 30;
 INTERFACE.frameHeight = 120;
+INTERFACE.healthBarPosition = 100;
 INTERFACE.upFrame = null;
 INTERFACE.downFrame = null;
 INTERFACE.phrases = [];
@@ -35,19 +36,25 @@ INTERFACE.setup = function(stage) {
 
     INTERFACE.interfaceStage = new PIXI.Container();
     INTERFACE.healthBar = new PIXI.Graphics();
-    INTERFACE.healthBar.maxValue = 100;
-    INTERFACE.healthBar.position.x = WIDTH - INTERFACE.healthBar.maxValue * SCALE - INTERFACE.border * SCALE;
+    INTERFACE.healthBar.maxValue = 0;
+    INTERFACE.healthBar.value = 0;
+    INTERFACE.healthBar.position.x = WIDTH - INTERFACE.healthBarPosition * SCALE - INTERFACE.border * SCALE;
     INTERFACE.healthBar.position.y = INTERFACE.border * SCALE;
     INTERFACE.interfaceStage.addChild(INTERFACE.healthBar);
     stage.addChild(INTERFACE.interfaceStage);
-    INTERFACE.setHealth(10);
 };
 
-INTERFACE.setHealth = function(health) {
-    INTERFACE.healthBar.clear();
-    INTERFACE.healthBar.lineStyle(INTERFACE.lineWidth, 0x000000, 1);
-    INTERFACE.healthBar.beginFill(0xFF0000, 1);
-    INTERFACE.healthBar.drawRect(0, 0, health * SCALE, 10);
+INTERFACE.setHealth = function(value, maxValue) {
+    if((value != INTERFACE.healthBar.value) || (maxValue != INTERFACE.healthBar.maxValue)) {
+        INTERFACE.healthBar.maxValue = maxValue;
+        INTERFACE.healthBar.value = value;
+        INTERFACE.healthBar.clear();
+        INTERFACE.healthBar.beginFill(Math.round(0xDD * (1 - value / maxValue)) * 0x10000 + Math.round(0xDD * (value / maxValue)) * 0x100 + 0x33, 1);
+        INTERFACE.healthBar.drawRect(0, 0, INTERFACE.healthBar.value * SCALE, 10);
+        INTERFACE.healthBar.lineStyle(INTERFACE.lineWidth, 0x000000, 1);
+        INTERFACE.healthBar.beginFill(0x000000, 0);
+        INTERFACE.healthBar.drawRect(0, 0, INTERFACE.healthBar.maxValue * SCALE, 10);
+    }
 };
 
 INTERFACE.tell = function() {
@@ -81,8 +88,8 @@ INTERFACE.telling = function() {
         if(INTERFACE.phrases.length != 0) {
             INTERFACE.text = INTERFACE.phrases.pop();
             INTERFACE.phrase = new PIXI.BitmapText('', INTERFACE.textStyle);
-            INTERFACE.phrase.x = 10;
-            INTERFACE.phrase.y = HEIGHT - INTERFACE.frameHeight + 10;
+            INTERFACE.phrase.x = INTERFACE.border;
+            INTERFACE.phrase.y = HEIGHT - INTERFACE.frameHeight + INTERFACE.border;
 
             stage.addChild(INTERFACE.phrase);
             INTERFACE.skip = false;

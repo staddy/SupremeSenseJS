@@ -82,5 +82,9 @@ INPUT.onTouch = function(eventData) {
 };
 
 INPUT.onDown = function(ex, ey) {
+    WORLD.player.health -= 10;
     ENTITY.playerBullet(gameScene, WORLD.player.x, WORLD.player.y, ex, ey);
+    for(var i = 0; i < 20; ++i) {
+        ENTITY.blood(gameScene, WORLD.player.x, WORLD.player.y);
+    }
 };

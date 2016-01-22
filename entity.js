@@ -52,11 +52,13 @@ ENTITY.flip = function(e) {
 
 ENTITY.looksRight = function(e) {
     return e.scale.x > 0;
-}
+};
 
 ENTITY.setPlayer = function(scene, x, y) {
     WORLD.player = new PIXI.Sprite();
     var player = WORLD.player;
+
+    player.weapon = ENTITY.knife(scene, player);
 
     player.category = ENTITY.CATEGORIES.PLAYER;
     player.down = false;
@@ -83,7 +85,8 @@ ENTITY.setPlayer = function(scene, x, y) {
     player.bounce = 0;
     player.speed = 4;
     player.jumpSpeed = 8;
-    player.health = 100.0;
+    player.health = 100;
+    player.maxHealth = 100;
     player.tick = function(e) {
         e.down = (INPUT.down[INPUT.KEY.DOWN.n] ? player.onGround : false);
         if(e.running)
@@ -134,6 +137,18 @@ ENTITY.setPlayer = function(scene, x, y) {
                 e.down = false;
             }
         }
+
+        if(e.health < e.maxHealth)
+            e.health += 0.1;
+
+        if(e.health > e.maxHealth)
+            e.health = e.maxHealth;
+
+        e.weapon.tick(e.weapon);
+        if(INPUT.down[INPUT.KEY.SPACE.n])
+            e.weapon.hit(e.weapon);
+
+        INTERFACE.setHealth(e.health, e.maxHealth);
     };
     player.hitWall = function(e, xa, ya) {
 
@@ -190,6 +205,117 @@ ENTITY.enemyBullet = function(scene, x1, y1, x2, y2) {
     var bullet = ENTITY.bullet(scene, x1, y1, x2, y2);
     WORLD.enemyBullets.push(bullet);
     bullet.category = ENTITY.CATEGORIES.ENEMYBULLET;
+};
+
+ENTITY.blood = function(scene, x, y) {
+    var blood = new PIXI.Sprite(PIXI.Texture.fromFrame('blood.png'));
+    blood.scale.x = blood.scale.y = 2;
+
+    blood.lifeTime = 10000;
+    blood.category = ENTITY.CATEGORIES.NONE;
+
+    blood.x = x;
+    blood.y = y;
+    blood.vx = Math.random() * 10 - 5;
+    blood.vy = Math.random() * 10 - 5;
+    blood.removed = false;
+    blood.bounce = 0.5;
+
+    blood.tick = function(e) {
+        e.vy += WORLD.GRAVITY;
+        ENTITY.tryMove(e, e.vx, e.vy);
+        if(e.x < 0 || e.y < 0 || e.x > WORLD.WIDTH|| e.y > WORLD.HEIGHT)
+            e.removed = true;
+        --e.lifeTime;
+        if(e.lifeTime <= 0)
+            e.removed = true;
+    };
+
+    blood.hitWall = function(e, xa, ya) {
+    };
+
+    blood.index = WORLD.entities.length;
+    WORLD.entities.push(blood);
+    scene.addChild(blood);
+};
+
+ENTITY.blade = function(scene, damage, e) {
+    var blade = new PIXI.Sprite(PIXI.Texture.fromFrame('blade.png'));
+    blade.scale.x = blade.scale.y = SCALE;
+    blade.owner = e;
+    blade.x = blade.owner.x + blade.owner.width / 2;
+    blade.y = blade.owner.y + blade.owner.height / 2 - 4;
+    if(ENTITY.looksRight(blade.owner) != ENTITY.looksRight(blade)) {
+        ENTITY.flip(blade);
+    }
+    if(!ENTITY.looksRight(blade))
+        blade.x -= blade.width;
+
+
+    blade.damage = damage;
+    blade.hit = false;
+    blade.lifeTime = 30;
+
+    blade.removed = false;
+    blade.tick = function(e) {
+        e.x = e.owner.x + e.owner.width / 2;
+        e.y = e.owner.y + e.owner.height / 2 - 4;
+        if(ENTITY.looksRight(e.owner) != ENTITY.looksRight(e)) {
+            ENTITY.flip(e);
+        }
+        if(!ENTITY.looksRight(e))
+            e.x -= e.width;
+        if(e.lifeTime <= 0)
+            e.removed = true;
+        --e.lifeTime;
+    };
+    blade.hitWall = function(e, xa, ya) {};
+    blade.collide = function(b, e) {
+        if(!b.hit) {
+            e.health -= damage;
+            b.hit = true;
+        }
+    };
+    blade.index = WORLD.entities.length;
+    WORLD.entities.push(blade);
+    scene.addChild(blade);
+
+    return blade;
+};
+
+ENTITY.enemyBlade = function(scene, damage, e) {
+    var blade = ENTITY.blade(scene, damage, e);
+    blade.category = ENTITY.CATEGORIES.ENEMYBULLET;
+    WORLD.enemyBullets.push(blade);
+};
+
+ENTITY.playerBlade = function(scene, damage, e) {
+    var blade = ENTITY.blade(scene, damage, e);
+    blade.category = ENTITY.CATEGORIES.PLAYERBULLET;
+    WORLD.playerBullets.push(blade);
+};
+
+ENTITY.knife = function(scene, e) {
+    var knife = {};
+    knife.owner = e;
+    knife.cooldown = 120;
+    knife.time = 0;
+    knife.damage = 10;
+    knife.hit = function(k) {
+        if(k.time <= 0) {
+            if(k.owner.category == ENTITY.CATEGORIES.ENEMY) {
+                ENTITY.enemyBlade(scene, k.damage, k.owner);
+            } else {
+                ENTITY.playerBlade(scene, k.damage, k.owner);
+            }
+            k.time = k.cooldown;
+        }
+    };
+    knife.tick = function(e) {
+        if(e.time > 0)
+            --e.time;
+    };
+    return knife;
 };
 
 ENTITY.CATEGORIES = {NONE: 0, PLAYER: 1, ENEMY: 2, PLAYERBULLET: 3, ENEMYBULLET: 4};
