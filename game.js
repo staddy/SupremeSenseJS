@@ -32,12 +32,6 @@ function setup() {
 
     WORLD.loadLevel(gameScene);
 
-    /*WORLD.player = new PIXI.Graphics();
-    // set a fill and a line style again and draw a rectangle
-    WORLD.player.lineStyle(2, 0x0000FF, 1);
-    WORLD.player.beginFill(0xFF700B, 1);
-    WORLD.player.drawRect(0, 0, 20, 10);*/
-
     ENTITY.setPlayer(gameScene, 200, 200);
     INTERFACE.setup(stage);
 

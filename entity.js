@@ -11,7 +11,7 @@ ENTITY.tryMove = function(e, xa, ya) {
             xx = e.x / WORLD.TILE;
             xa = -(xx - Math.floor(xx)) * WORLD.TILE;
         } else {
-            xx = (e.x + e.width) / 10;
+            xx = (e.x + e.width) / WORLD.TILE;
             xa = WORLD.TILE - (xx - Math.floor(xx)) * WORLD.TILE;
         }
         if (WORLD.isFree(xa, 0, e)) {
@@ -54,75 +54,116 @@ ENTITY.looksRight = function(e) {
     return e.scale.x > 0;
 };
 
-ENTITY.setPlayer = function(scene, x, y) {
-    WORLD.player = new PIXI.Sprite();
-    var player = WORLD.player;
-
-    player.weapon = ENTITY.knife(scene, player);
-
-    player.category = ENTITY.CATEGORIES.PLAYER;
-    player.down = false;
-
-    player.sprites = [];
-    for(var i = 1; i <= 8; ++i) {
-        player.sprites.push(PIXI.Texture.fromFrame('character' + i + '.png'));
+ENTITY.personTick = function(e) {
+    if(e.runsRight) {
+        if (!ENTITY.looksRight(e))
+            ENTITY.flip(e);
+    } else if(e.runsLeft) {
+        if(ENTITY.looksRight(e))
+            ENTITY.flip(e);
     }
 
-    player.sid = 3;
-    player.texture = player.sprites[player.sid];
-    player.running = false;
-    player.time = 0;
-    player.dt = 10;
+    if(e.running && e.onGround)
+        ++e.time;
+    else if(e.sid != 7)
+        e.sid = 3;
+    if(e.time > e.dt) {
+        ++e.sid;
+        if(e.sid >= 7)
+            e.sid = 0;
+        e.time = 0;
+    }
+    e.texture = e.sprites[e.sid];
+    e.vy += WORLD.GRAVITY;
+    if(Math.abs(e.vy) >= WORLD.MAXSPEED) e.vy = Math.sign(e.vy) * WORLD.MAXSPEED;
+    if(Math.abs(e.vx) >= WORLD.MAXSPEED) e.vx = Math.sign(e.vx) * WORLD.MAXSPEED;
+    ENTITY.tryMove(e, e.vx, e.vy);
 
-    scene.addChild(WORLD.player);
-    player.scale.x = 2;
-    player.scale.y = 2;
-    player.onGround = false;
-    player.x = x;
-    player.y = y;
-    player.vx = 0;
-    player.vy = 0;
-    player.bounce = 0;
-    player.speed = 4;
-    player.jumpSpeed = 8;
-    player.health = 100;
-    player.maxHealth = 100;
+    if(e.health < e.maxHealth)
+        e.health += e.healthRegeneration;
+
+    if(e.health > e.maxHealth)
+        e.health = e.maxHealth;
+
+    e.weapon.tick(e.weapon);
+};
+
+ENTITY.person = function(scene, x, y, textures, category) {
+    var person = new PIXI.Sprite();
+
+    person.category = category;
+    person.weapon = ENTITY.knife(scene, person);
+
+    person.down = false;
+
+    person.sprites = textures;
+
+    person.sid = 3;
+    person.texture = person.sprites[person.sid];
+    person.running = false;
+    person.runsRight = false;
+    person.runsLeft = false;
+    person.time = 0;
+    person.dt = 7;
+
+    scene.addChild(person);
+    person.scale.x = SCALE;
+    person.scale.y = SCALE;
+    person.onGround = false;
+    person.x = x;
+    person.y = y;
+    person.vx = 0;
+    person.vy = 0;
+    person.bounce = 0;
+    person.speed = 2.5;
+    person.jumpSpeed = 7.6;
+    person.health = 100;
+    person.maxHealth = 100;
+    person.healthRegeneration = 0.1;
+    person.tick = function(e) {
+        ENTITY.personTick(e);
+    };
+    person.hitWall = function(e, xa, ya) {
+
+    };
+    person.collide = function(e, b) {
+
+    };
+    return person;
+};
+
+ENTITY.setPlayer = function(scene, x, y) {
+    var textures = [];
+    for(var i = 1; i <= 8; ++i) {
+        textures.push(PIXI.Texture.fromFrame('character' + i + '.png'));
+    }
+    var player = ENTITY.person(scene, x, y, textures, ENTITY.CATEGORIES.PLAYER);
+    WORLD.player = player;
+
     player.tick = function(e) {
-        e.down = (INPUT.down[INPUT.KEY.DOWN.n] ? player.onGround : false);
-        if(e.running)
-            ++e.time;
-        if(e.time > e.dt) {
-            ++player.sid;
-            if(player.sid >= 7)
-                player.sid = 0;
-            player.texture = player.sprites[player.sid];
-            e.time = 0;
-        }
+        e.down = (INPUT.down[INPUT.KEY.DOWN.n] ? e.onGround : false);
         if(INPUT.down[INPUT.KEY.RIGHT.n]) {
-            if(!ENTITY.looksRight(this))
-                ENTITY.flip(this);
+            e.runsRight = true;
+            e.runsLeft = false;
             e.vx = e.speed;
-            player.running = true;
+            e.running = true;
         }
         else if(INPUT.down[INPUT.KEY.LEFT.n]) {
-            if(ENTITY.looksRight(this))
-                ENTITY.flip(this);
+            e.runsLeft = true;
+            e.runsRight = false;
             e.vx = -e.speed;
-            player.running = true;
+            e.running = true;
         }
         else {
             e.vx = 0;
-            player.running = false;
+            e.runsRight = false;
+            e.runsLeft = false;
+            e.running = false;
         }
         if(e.onGround) {
             if(INPUT.down[INPUT.KEY.UP.n])
                 e.vy = -e.jumpSpeed;
         }
-        e.vy += WORLD.GRAVITY;
-        if(Math.abs(e.vy) >= WORLD.MAXSPEED) e.vy = Math.sign(e.vy) * WORLD.MAXSPEED;
-        if(Math.abs(e.vx) >= WORLD.MAXSPEED) e.vx = Math.sign(e.vx) * WORLD.MAXSPEED;
-        ENTITY.tryMove(e, e.vx, e.vy);
-
         if(INPUT.down[INPUT.KEY.DOWN.n] && e.onGround) {
                 if (e.height == 40)
                     e.y += 20;
@@ -137,16 +178,10 @@ ENTITY.setPlayer = function(scene, x, y) {
                 e.down = false;
             }
         }
-
-        if(e.health < e.maxHealth)
-            e.health += 0.1;
-
-        if(e.health > e.maxHealth)
-            e.health = e.maxHealth;
-
-        e.weapon.tick(e.weapon);
         if(INPUT.down[INPUT.KEY.SPACE.n])
             e.weapon.hit(e.weapon);
+
+        ENTITY.personTick(e);
 
         INTERFACE.setHealth(e.health, e.maxHealth);
     };
@@ -209,7 +244,7 @@ ENTITY.enemyBullet = function(scene, x1, y1, x2, y2) {
 
 ENTITY.blood = function(scene, x, y) {
     var blood = new PIXI.Sprite(PIXI.Texture.fromFrame('blood.png'));
-    blood.scale.x = blood.scale.y = 2;
+    blood.scale.x = blood.scale.y = SCALE;
 
     blood.lifeTime = 10000;
     blood.category = ENTITY.CATEGORIES.NONE;
@@ -241,9 +276,14 @@ ENTITY.blood = function(scene, x, y) {
 
 ENTITY.blade = function(scene, damage, e) {
     var blade = new PIXI.Sprite(PIXI.Texture.fromFrame('blade.png'));
+
     blade.scale.x = blade.scale.y = SCALE;
     blade.owner = e;
-    blade.x = blade.owner.x + blade.owner.width / 2;
+    blade.owner.sid += 4;
+    blade.owner.sid %= 8;
+    blade.maxLifeTime = 10;
+    blade.lifeTime = blade.maxLifeTime;
+    blade.x = blade.owner.x + blade.owner.width / 2 + (ENTITY.looksRight(blade) ? 1 : -1) * (blade.lifeTime / blade.maxLifeTime) * 5;
     blade.y = blade.owner.y + blade.owner.height / 2 - 4;
     if(ENTITY.looksRight(blade.owner) != ENTITY.looksRight(blade)) {
         ENTITY.flip(blade);
@@ -254,19 +294,21 @@ ENTITY.blade = function(scene, damage, e) {
 
     blade.damage = damage;
     blade.hit = false;
-    blade.lifeTime = 30;
 
     blade.removed = false;
     blade.tick = function(e) {
-        e.x = e.owner.x + e.owner.width / 2;
+        e.x = e.owner.x + e.owner.width / 2 + (ENTITY.looksRight(e) ? 1 : -1) * (e.lifeTime / e.maxLifeTime) * 5;
         e.y = e.owner.y + e.owner.height / 2 - 4;
         if(ENTITY.looksRight(e.owner) != ENTITY.looksRight(e)) {
             ENTITY.flip(e);
         }
         if(!ENTITY.looksRight(e))
             e.x -= e.width;
-        if(e.lifeTime <= 0)
+        if(e.lifeTime <= 0) {
             e.removed = true;
+            blade.owner.sid += 4;
+            blade.owner.sid %= 8;
+        }
         --e.lifeTime;
     };
     blade.hitWall = function(e, xa, ya) {};
@@ -298,7 +340,7 @@ ENTITY.playerBlade = function(scene, damage, e) {
 ENTITY.knife = function(scene, e) {
     var knife = {};
     knife.owner = e;
-    knife.cooldown = 120;
+    knife.cooldown = 30;
     knife.time = 0;
     knife.damage = 10;
     knife.hit = function(k) {
