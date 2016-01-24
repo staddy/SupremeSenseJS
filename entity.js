@@ -103,6 +103,7 @@ ENTITY.person = function(scene, x, y, textures, category) {
     person.running = false;
     person.runsRight = false;
     person.runsLeft = false;
+    person.canWalk = true;
     person.time = 0;
     person.dt = 7;
 
@@ -132,6 +133,78 @@ ENTITY.person = function(scene, x, y, textures, category) {
     return person;
 };
 
+ENTITY.guard = function(scene, x, y) {
+    var textures = [];
+    for(var i = 1; i <= 8; ++i) {
+        textures.push(PIXI.Texture.fromFrame('character' + i + '.png'));
+    }
+    var guard = ENTITY.person(scene, x, y, textures, ENTITY.CATEGORIES.ENEMY);
+    guard.AIcycle = 60;
+    guard.AIcurrent = guard.AIcycle;
+    guard.shouldLeft = false;
+    guard.shouldRight = false;
+    guard.tick = function(e) {
+        if(e.shouldLeft) {
+            e.vx = -e.speed;
+            e.runsRight = false;
+            e.runsLeft = true;
+            e.running = true;
+            e.AIcurrent = e.AIcycle;
+            e.shouldLeft = false;
+            e.shouldRight = false;
+        } else if(e.shouldRight) {
+            e.vx = e.speed;
+            e.runsRight = true;
+            e.runsLeft = false;
+            e.running = true;
+            e.AIcurrent = e.AIcycle;
+            e.shouldLeft = false;
+            e.shouldRight = false;
+        }
+        if(e.AIcurrent <= 0) {
+            if (e.canWalk) {
+                if (WORLD.player.x > e.x) {
+                    e.shouldLeft = false;
+                    e.shouldRight = true;
+                }
+                else {
+                    e.shouldLeft = true;
+                    e.shouldRight = false;
+                }
+            }
+            e.AIcurrent = e.AIcycle;
+        }
+        --e.AIcurrent;
+        //if((Math.abs(WORLD.player.x - e.x) < 10) && (Math.abs(WORLD.player.y - e.y) < 10))
+            e.weapon.hit(e.weapon);
+        if(Math.random() > 0.95)
+            if(e.onGround)
+                e.vy = -e.jumpSpeed;
+        if(WORLD.player.y > e.y)
+            e.down = true;
+        else
+            e.down = false;
+        ENTITY.personTick(e);
+    };
+    guard.collide = function(e, b) {
+
+    };
+    guard.hitWall = function(e, xa, ya) {
+        if(xa > 0) {
+            e.shouldRight  = false;
+            e.shouldLeft = true;
+        } else if(xa < 0) {
+            e.shouldRight  = true;
+            e.shouldLeft = false;
+        }
+    };
+    guard.category = ENTITY.CATEGORIES.ENEMY;
+    guard.index = WORLD.enemies.length;
+    WORLD.entities.push(guard);
+    WORLD.enemies.push(guard);
+    return guard;
+};
+
 ENTITY.setPlayer = function(scene, x, y) {
     var textures = [];
     for(var i = 1; i <= 8; ++i) {
@@ -142,27 +215,29 @@ ENTITY.setPlayer = function(scene, x, y) {
 
     player.tick = function(e) {
         e.down = (INPUT.down[INPUT.KEY.DOWN.n] ? e.onGround : false);
-        if(INPUT.down[INPUT.KEY.RIGHT.n]) {
-            e.runsRight = true;
-            e.runsLeft = false;
-            e.vx = e.speed;
-            e.running = true;
-        }
-        else if(INPUT.down[INPUT.KEY.LEFT.n]) {
-            e.runsLeft = true;
-            e.runsRight = false;
-            e.vx = -e.speed;
-            e.running = true;
-        }
-        else {
-            e.vx = 0;
-            e.runsRight = false;
-            e.runsLeft = false;
-            e.running = false;
-        }
-        if(e.onGround) {
-            if(INPUT.down[INPUT.KEY.UP.n])
-                e.vy = -e.jumpSpeed;
+        if(e.canWalk) {
+            if (INPUT.down[INPUT.KEY.RIGHT.n]) {
+                e.runsRight = true;
+                e.runsLeft = false;
+                e.vx = e.speed;
+                e.running = true;
+            }
+            else if (INPUT.down[INPUT.KEY.LEFT.n]) {
+                e.runsLeft = true;
+                e.runsRight = false;
+                e.vx = -e.speed;
+                e.running = true;
+            }
+            else {
+                e.vx = 0;
+                e.runsRight = false;
+                e.runsLeft = false;
+                e.running = false;
+            }
+            if (e.onGround) {
+                if (INPUT.down[INPUT.KEY.UP.n])
+                    e.vy = -e.jumpSpeed;
+            }
         }
         if(INPUT.down[INPUT.KEY.DOWN.n] && e.onGround) {
                 if (e.height == 40)
@@ -224,7 +299,6 @@ ENTITY.bullet = function(scene, x1, y1, x2, y2) {
         e.removed = true;
     };
     bullet.collide = function(b, e) {b.removed = true;};
-    bullet.index = WORLD.entities.length;
     WORLD.entities.push(bullet);
     scene.addChild(bullet);
     return bullet;
@@ -232,12 +306,14 @@ ENTITY.bullet = function(scene, x1, y1, x2, y2) {
 
 ENTITY.playerBullet = function(scene, x1, y1, x2, y2) {
     var bullet = ENTITY.bullet(scene, x1, y1, x2, y2);
+    bullet.index = WORLD.playerBullets.length;
     WORLD.playerBullets.push(bullet);
     bullet.category = ENTITY.CATEGORIES.PLAYERBULLET;
 };
 
 ENTITY.enemyBullet = function(scene, x1, y1, x2, y2) {
     var bullet = ENTITY.bullet(scene, x1, y1, x2, y2);
+    bullet.index = WORLD.enemyBullets.length;
     WORLD.enemyBullets.push(bullet);
     bullet.category = ENTITY.CATEGORIES.ENEMYBULLET;
 };
@@ -246,7 +322,7 @@ ENTITY.blood = function(scene, x, y) {
     var blood = new PIXI.Sprite(PIXI.Texture.fromFrame('blood.png'));
     blood.scale.x = blood.scale.y = SCALE;
 
-    blood.lifeTime = 10000;
+    blood.lifeTime = 60 * 3;
     blood.category = ENTITY.CATEGORIES.NONE;
 
     blood.x = x;
@@ -269,7 +345,6 @@ ENTITY.blood = function(scene, x, y) {
     blood.hitWall = function(e, xa, ya) {
     };
 
-    blood.index = WORLD.entities.length;
     WORLD.entities.push(blood);
     scene.addChild(blood);
 };
@@ -316,9 +391,11 @@ ENTITY.blade = function(scene, damage, e) {
         if(!b.hit) {
             e.health -= damage;
             b.hit = true;
+            for(var i = 0; i < 20; ++i) {
+                ENTITY.blood(gameScene, b.x + b.width / 2, b.y + b.height / 2);
+            }
         }
     };
-    blade.index = WORLD.entities.length;
     WORLD.entities.push(blade);
     scene.addChild(blade);
 
@@ -328,12 +405,14 @@ ENTITY.blade = function(scene, damage, e) {
 ENTITY.enemyBlade = function(scene, damage, e) {
     var blade = ENTITY.blade(scene, damage, e);
     blade.category = ENTITY.CATEGORIES.ENEMYBULLET;
+    blade.index = WORLD.enemyBullets.length;
     WORLD.enemyBullets.push(blade);
 };
 
 ENTITY.playerBlade = function(scene, damage, e) {
     var blade = ENTITY.blade(scene, damage, e);
     blade.category = ENTITY.CATEGORIES.PLAYERBULLET;
+    blade.index = WORLD.playerBullets.length;
     WORLD.playerBullets.push(blade);
 };
 
