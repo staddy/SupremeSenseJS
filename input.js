@@ -9,7 +9,8 @@ INPUT.KEY = {
     A: {n: 1, code: 65},
     W: {n: 2, code: 87},
     D: {n: 3, code: 68},
-    S: {n: 4, code: 83}
+    S: {n: 4, code: 83},
+    SHIFT: {n: 5, code: 16}
 };
 
 INPUT.down = [false, false, false, false, false];
@@ -45,6 +46,10 @@ INPUT.onKey = function(ev, key, down) {
         case KEY.D.code:
         case KEY.RIGHT.code:
             input[KEY.RIGHT.n] = down;
+            ev.preventDefault();
+            return false;
+        case KEY.SHIFT.code:
+            input[KEY.SHIFT.n] = down;
             ev.preventDefault();
             return false;
     }

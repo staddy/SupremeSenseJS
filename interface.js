@@ -1,6 +1,7 @@
 var INTERFACE = {};
 
 INTERFACE.healthBar = {};
+INTERFACE.energyBar = {};
 INTERFACE.border = 10;
 INTERFACE.lineWidth = 2;
 INTERFACE.onTell = false;
@@ -35,12 +36,21 @@ INTERFACE.setup = function(stage) {
     stage.addChild(INTERFACE.downFrame);
 
     INTERFACE.interfaceStage = new PIXI.Container();
+
     INTERFACE.healthBar = new PIXI.Graphics();
     INTERFACE.healthBar.maxValue = 0;
     INTERFACE.healthBar.value = 0;
     INTERFACE.healthBar.position.x = WIDTH - INTERFACE.healthBarPosition * SCALE - INTERFACE.border * SCALE;
     INTERFACE.healthBar.position.y = INTERFACE.border * SCALE;
     INTERFACE.interfaceStage.addChild(INTERFACE.healthBar);
+
+    INTERFACE.energyBar = new PIXI.Graphics();
+    INTERFACE.energyBar.maxValue = 0;
+    INTERFACE.energyBar.value = 0;
+    INTERFACE.energyBar.position.x = WIDTH - INTERFACE.healthBarPosition * SCALE - INTERFACE.border * SCALE;
+    INTERFACE.energyBar.position.y = INTERFACE.border * SCALE + 10 + 5;
+    INTERFACE.interfaceStage.addChild(INTERFACE.energyBar);
+
     stage.addChild(INTERFACE.interfaceStage);
 };
 
@@ -54,6 +64,19 @@ INTERFACE.setHealth = function(value, maxValue) {
         INTERFACE.healthBar.lineStyle(INTERFACE.lineWidth, 0x000000, 1);
         INTERFACE.healthBar.beginFill(0x000000, 0);
         INTERFACE.healthBar.drawRect(0, 0, INTERFACE.healthBar.maxValue * SCALE, 10);
+    }
+};
+
+INTERFACE.setEnergy = function(value, maxValue) {
+    if((value != INTERFACE.energyBar.value) || (maxValue != INTERFACE.energyBar.maxValue)) {
+        INTERFACE.energyBar.maxValue = maxValue;
+        INTERFACE.energyBar.value = value;
+        INTERFACE.energyBar.clear();
+        INTERFACE.energyBar.beginFill(0x0000FF, 1);
+        INTERFACE.energyBar.drawRect(0, 0, INTERFACE.energyBar.value * SCALE, 10);
+        INTERFACE.energyBar.lineStyle(INTERFACE.lineWidth, 0x000000, 1);
+        INTERFACE.energyBar.beginFill(0x000000, 0);
+        INTERFACE.energyBar.drawRect(0, 0, INTERFACE.energyBar.maxValue * SCALE, 10);
     }
 };
 

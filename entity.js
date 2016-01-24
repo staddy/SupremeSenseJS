@@ -85,11 +85,26 @@ ENTITY.personTick = function(e) {
     if(e.health > e.maxHealth)
         e.health = e.maxHealth;
 
+    if(e.energy < e.maxEnergy)
+        e.energy += e.energyRegeneration;
+
+    if(e.energy > e.maxEnergy)
+        e.energy = e.maxEnergy;
+
     e.weapon.tick(e.weapon);
+    for(var i = 0; i < e.effects.length; ++i) {
+        var eff = e.effects[i];
+        if(eff.removed)
+            e.effects.splice(i--, 1);
+        else
+            eff.tick(eff);
+    }
 };
 
 ENTITY.person = function(scene, x, y, textures, category) {
     var person = new PIXI.Sprite();
+
+    person.effects = [];
 
     person.category = category;
     person.weapon = ENTITY.knife(scene, person);
@@ -120,7 +135,10 @@ ENTITY.person = function(scene, x, y, textures, category) {
     person.jumpSpeed = 7.6;
     person.health = 100;
     person.maxHealth = 100;
+    person.energy = 100;
+    person.maxEnergy = 100;
     person.healthRegeneration = 0.1;
+    person.energyRegeneration = 0.1;
     person.tick = function(e) {
         ENTITY.personTick(e);
     };
@@ -186,7 +204,7 @@ ENTITY.guard = function(scene, x, y) {
             e.AIcurrent = e.AIcycle;
         }
         --e.AIcurrent;
-        if((Math.abs(WORLD.player.x - e.x) < 10) && (Math.abs(WORLD.player.y - e.y) < 10))
+        if((Math.abs(WORLD.player.x - e.x) < 20) && (Math.abs(WORLD.player.y - e.y) < 40))
             e.weapon.hit(e.weapon);
         if(Math.random() < e.randomness)
             if(e.onGround)
@@ -231,7 +249,14 @@ ENTITY.setPlayer = function(scene, x, y) {
     var player = ENTITY.person(scene, x, y, textures, ENTITY.CATEGORIES.PLAYER);
     WORLD.player = player;
 
+    player.dashcd = 30;
+    player.dashcost = 30;
+    player.dashtimer = 0;
+
     player.tick = function(e) {
+        if(e.dashtimer > 0)
+            --e.dashtimer;
+
         e.down = (INPUT.down[INPUT.KEY.DOWN.n] ? e.onGround : false);
         if(e.canWalk) {
             if (INPUT.down[INPUT.KEY.RIGHT.n]) {
@@ -257,7 +282,12 @@ ENTITY.setPlayer = function(scene, x, y) {
                     e.vy = -e.jumpSpeed;
             }
         }
-        if(INPUT.down[INPUT.KEY.DOWN.n] && e.onGround) {
+        if(INPUT.down[INPUT.KEY.SHIFT.n] && e.onGround && e.canWalk && !e.down && (e.energy >= e.dashcost) && (e.dashtimer <= 0)) {
+            e.effects.push(ENTITY.dash(e, ENTITY.looksRight(e)));
+            e.energy -= e.dashcost;
+            e.dashtimer = e.dashcd;
+        }
+        if(INPUT.down[INPUT.KEY.DOWN.n] && e.onGround && e.canWalk) {
                 if (e.height == 40)
                     e.y += 20;
                 e.height = 20;
@@ -277,6 +307,7 @@ ENTITY.setPlayer = function(scene, x, y) {
         ENTITY.personTick(e);
 
         INTERFACE.setHealth(e.health, e.maxHealth);
+        INTERFACE.setEnergy(e.energy, e.maxEnergy);
     };
     player.hitWall = function(e, xa, ya) {
 
@@ -408,6 +439,8 @@ ENTITY.blade = function(scene, damage, e) {
     blade.collide = function(b, e) {
         if(!b.hit) {
             e.health -= damage;
+            e.effects.push(ENTITY.slow(e));
+            e.effects.push(ENTITY.knockback(e, ENTITY.looksRight(b)));
             b.hit = true;
             for(var i = 0; i < 20; ++i) {
                 ENTITY.blood(gameScene, b.x + b.width / 2, b.y + b.height / 2);
@@ -455,6 +488,58 @@ ENTITY.knife = function(scene, e) {
             --e.time;
     };
     return knife;
+};
+
+ENTITY.slow = function(e) {
+    var slow = {};
+    slow.duration = 120;
+    slow.oldSpeed = e.speed;
+    slow.target = e;
+    slow.removed = false;
+    e.speed /= 2;
+    slow.tick = function(e) {
+        --e.duration;
+        if(e.duration <= 0) {
+            e.target.speed *= 2;
+            e.removed = true;
+        }
+    };
+    return slow;
+};
+
+ENTITY.knockback = function(e, right) {
+    var knockback = {};
+    knockback.duration = 15;
+    knockback.target = e;
+    knockback.removed = false;
+    e.canWalk = false;
+    e.vx = (right ? 1 : -1) * 3;
+    e.vy -= 4;
+    knockback.tick = function(e) {
+        --e.duration;
+        if(e.duration <= 0) {
+            e.target.canWalk = true;
+            e.removed = true;
+        }
+    };
+    return knockback;
+};
+
+ENTITY.dash = function(e, right) {
+    var dash = {};
+    dash.duration = 5;
+    dash.target = e;
+    dash.removed = false;
+    e.canWalk = false;
+    e.vx = (right ? 1 : -1) * 9;
+    dash.tick = function(e) {
+        --e.duration;
+        if(e.duration <= 0) {
+            e.target.canWalk = true;
+            e.removed = true;
+        }
+    };
+    return dash;
 };
 
 ENTITY.CATEGORIES = {NONE: 0, PLAYER: 1, ENEMY: 2, PLAYERBULLET: 3, ENEMYBULLET: 4};
