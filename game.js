@@ -34,6 +34,9 @@ function setup() {
 
     ENTITY.setPlayer(gameScene, 200, 200);
     ENTITY.guard(gameScene, 300, 200);
+    ENTITY.guard(gameScene, 300, 200);
+    ENTITY.guard(gameScene, 300, 200);
+    ENTITY.guard(gameScene, 300, 200);
     INTERFACE.setup(stage);
 
     state = play;

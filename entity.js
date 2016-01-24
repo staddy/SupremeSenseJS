@@ -143,7 +143,18 @@ ENTITY.guard = function(scene, x, y) {
     guard.AIcurrent = guard.AIcycle;
     guard.shouldLeft = false;
     guard.shouldRight = false;
+    guard.randomness = 0.01;
+
+    guard.maxHealth = 10;
     guard.tick = function(e) {
+        var r = Math.random()
+        if(r > (1 - e.randomness)) {
+            e.shouldRight = true;
+            e.shouldLeft = false;
+        } else if(r < e.randomness) {
+            e.shouldRight = false;
+            e.shouldLeft = true;
+        }
         if(e.shouldLeft) {
             e.vx = -e.speed;
             e.runsRight = false;
@@ -175,9 +186,9 @@ ENTITY.guard = function(scene, x, y) {
             e.AIcurrent = e.AIcycle;
         }
         --e.AIcurrent;
-        //if((Math.abs(WORLD.player.x - e.x) < 10) && (Math.abs(WORLD.player.y - e.y) < 10))
+        if((Math.abs(WORLD.player.x - e.x) < 10) && (Math.abs(WORLD.player.y - e.y) < 10))
             e.weapon.hit(e.weapon);
-        if(Math.random() > 0.95)
+        if(Math.random() < e.randomness)
             if(e.onGround)
                 e.vy = -e.jumpSpeed;
         if(WORLD.player.y > e.y)
@@ -185,6 +196,13 @@ ENTITY.guard = function(scene, x, y) {
         else
             e.down = false;
         ENTITY.personTick(e);
+
+        if(e.health <= 0) {
+            e.removed = true;
+            for(var i = 0; i < 40; ++i) {
+                ENTITY.blood(gameScene, e.x + e.width / 2, e.y + e.height / 2);
+            }
+        }
     };
     guard.collide = function(e, b) {
 
@@ -298,7 +316,7 @@ ENTITY.bullet = function(scene, x1, y1, x2, y2) {
     bullet.hitWall = function(e, xa, ya) {
         e.removed = true;
     };
-    bullet.collide = function(b, e) {b.removed = true;};
+    bullet.collide = function(b, e) {b.removed = true;e.health -= 10;};
     WORLD.entities.push(bullet);
     scene.addChild(bullet);
     return bullet;

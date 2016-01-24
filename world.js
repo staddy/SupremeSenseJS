@@ -162,13 +162,16 @@ WORLD.tick = function() {
             WORLD.entities.splice(i--, 1);
             switch(e.category) {
                 case ENTITY.CATEGORIES.ENEMY:
-                    WORLD.enemies.splice(e.index, 1);
+                    // todo
+                    WORLD.enemies.splice(WORLD.enemies.indexOf(e), 1);
                     break;
                 case ENTITY.CATEGORIES.PLAYERBULLET:
-                    WORLD.playerBullets.splice(e.index, 1);
+                    // todo
+                    WORLD.playerBullets.splice(WORLD.playerBullets.indexOf(e), 1);
                     break;
                 case ENTITY.CATEGORIES.ENEMYBULLET:
-                    WORLD.enemyBullets.splice(e.index, 1);
+                    //todo
+                    WORLD.enemyBullets.splice(WORLD.enemyBullets.indexOf(e), 1);
                     break;
             }
             e.visible = false;
