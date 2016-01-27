@@ -250,7 +250,7 @@ ENTITY.setPlayer = function(scene, x, y) {
     WORLD.player = player;
 
     player.dashcd = 30;
-    player.dashcost = 30;
+    player.dashcost = 10;
     player.dashtimer = 0;
 
     player.tick = function(e) {
@@ -318,7 +318,7 @@ ENTITY.setPlayer = function(scene, x, y) {
 };
 
 ENTITY.bullet = function(scene, x1, y1, x2, y2) {
-    var bulletSpeed = 11.0;
+    var bulletSpeed = 17.0;
     var bya, bxa;
     if((y2 - y1) != 0) {
         var k = ((x2 - x1) / (y2 - y1));
@@ -328,10 +328,8 @@ ENTITY.bullet = function(scene, x1, y1, x2, y2) {
         bya = 0;
         bxa = bulletSpeed * Math.sign(x2 - x1);
     }
-    var bullet = new PIXI.Graphics();
-    bullet.lineStyle(2, 0xFFFFFF, 1);
-    bullet.moveTo(0, 0);
-    bullet.lineTo(5, 0);
+    var bullet = new PIXI.Sprite(PIXI.Texture.fromFrame('bullet.png'));
+    bullet.scale.x = bullet.scale.y = SCALE;
     bullet.x = x1;
     bullet.y = y1;
     bullet.rotation = (k != 0) ? Math.atan(1/k) : (Math.PI / 2 * Math.sign(y2 - y1));
@@ -497,10 +495,12 @@ ENTITY.slow = function(e) {
     slow.target = e;
     slow.removed = false;
     e.speed /= 2;
+    e.jumpSpeed /= 2;
     slow.tick = function(e) {
         --e.duration;
         if(e.duration <= 0) {
             e.target.speed *= 2;
+            e.target.jumpSpeed *= 2;
             e.removed = true;
         }
     };
@@ -540,6 +540,16 @@ ENTITY.dash = function(e, right) {
         }
     };
     return dash;
+};
+
+ENTITY.gun = function(scene, e) {
+    var gun = new PIXI.Sprite(PIXI.Texture.fromFrame('gun.png'));
+    gun.owner = e;
+    gun.tick = function(e) {
+        e.x = e.owner.x + e.owner.width / 2 + (ENTITY.looksRight(e) ? 1 : -1) * 5;
+        e.y = e.owner.y + e.owner.height / 2 - 4;
+    };
+    scene.addChild(gun);
 };
 
 ENTITY.CATEGORIES = {NONE: 0, PLAYER: 1, ENEMY: 2, PLAYERBULLET: 3, ENEMYBULLET: 4};
