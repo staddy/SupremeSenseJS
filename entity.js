@@ -14,10 +14,9 @@ ENTITY.tryMove = function(e, xa, ya) {
             xx = (e.x + e.width) / WORLD.TILE;
             xa = WORLD.TILE - (xx - Math.floor(xx)) * WORLD.TILE;
         }
-        if (WORLD.isFree(xa, 0, e)) {
+        if(WORLD.isFree(xa, 0, e)) {
             e.x += xa;
         }
-        e.vx *= -e.bounce;
     }
     if(WORLD.isFree(0, ya, e)) {
         e.y += ya;
@@ -35,7 +34,6 @@ ENTITY.tryMove = function(e, xa, ya) {
         if(WORLD.isFree(0, ya, e)) {
             e.y += ya;
         }
-        e.vy *= -e.bounce;
     }
     // to avoid bug
     e.x = Math.round((e.x)*100)/100;
@@ -52,6 +50,79 @@ ENTITY.flip = function(e) {
 
 ENTITY.looksRight = function(e) {
     return e.scale.x > 0;
+};
+
+ENTITY.Object = function(category, lifeTime) {
+    this.removed = false;
+    this.category = category;
+    this.lifeTime = lifeTime;
+    WORLD.entities.push(this);
+    switch(this.category) {
+        case ENTITY.CATEGORIES.ENEMY:
+            WORLD.enemies.push(this);
+            break;
+        case ENTITY.CATEGORIES.PLAYERBULLET:
+            WORLD.playerBullets.push(this);
+            break;
+        case ENTITY.CATEGORIES.ENEMYBULLET:
+            WORLD.enemyBullets.push(this);
+            break;
+    }
+};
+ENTITY.Object.prototype.tick = function() {
+    if(this.lifeTime > 0)
+        --this.lifeTime;
+    else if(this.lifeTime == 0)
+        this.removed = true;
+};
+
+ENTITY.LevelObject = function(x, y, width, height, category, lifeTime) {
+    this.super = ENTITY.LevelObject.super;
+    this.super.constructor.call(this, category, lifeTime);
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+};
+extend(ENTITY.LevelObject, ENTITY.Object);
+
+ENTITY.SpriteObject = function(x, y, sprite, scene, category, lifeTime) {
+    this.super = ENTITY.SpriteObject.super;
+    this.sprite = sprite;
+    this.sprite.scale.x = this.sprite.scale.y = SCALE;
+    scene.addChild(this.sprite);
+    this.super.constructor.call(this, x, y, sprite.width, sprite.height, category, lifeTime);
+};
+extend(ENTITY.SpriteObject, ENTITY.LevelObject);
+ENTITY.SpriteObject.prototype.tick = function() {
+    this.super.tick.call(this);
+    this.sprite.x = this.x;
+    this.sprite.y = this.y;
+};
+
+ENTITY.PhysicalObject = function(x, y, sprite, scene, category, lifeTime) {
+    this.super = ENTITY.PhysicalObject.super;
+    this.super.constructor.call(this, x, y, sprite, scene, category, lifeTime);
+    this.vx = 0;
+    this.vy = 0;
+    this.bounce = 0;
+    this.onGround = false;
+    this.gravity = true;
+};
+extend(ENTITY.PhysicalObject, ENTITY.SpriteObject);
+ENTITY.PhysicalObject.prototype.tick = function() {
+    this.super.tick.call(this);
+    if(this.gravity)
+        this.vy += WORLD.GRAVITY;
+    if(Math.abs(e.vy) >= WORLD.MAXSPEED) e.vy = Math.sign(e.vy) * WORLD.MAXSPEED;
+    if(Math.abs(e.vx) >= WORLD.MAXSPEED) e.vx = Math.sign(e.vx) * WORLD.MAXSPEED;
+    ENTITY.tryMove(this, this.vx, this.vy);
+};
+ENTITY.PhysicalObject.prototype.hitWall = function(xa, ya) {
+    if(xa != 0)
+        this.vx *= -this.bounce;
+    else if(ya != 0)
+        this.vy *= -this.bounce;
 };
 
 ENTITY.personTick = function(e) {
