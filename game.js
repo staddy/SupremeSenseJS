@@ -32,11 +32,11 @@ function setup() {
 
     WORLD.loadLevel(gameScene);
 
-    ENTITY.setPlayer(gameScene, 200, 200);
-    ENTITY.guard(gameScene, 300, 200);
-    ENTITY.guard(gameScene, 300, 200);
-    ENTITY.guard(gameScene, 300, 200);
-    ENTITY.guard(gameScene, 300, 200);
+    new ENTITY.Player(200, 200, gameScene);
+    //ENTITY.guard(gameScene, 300, 200);
+    //ENTITY.guard(gameScene, 300, 200);
+    //ENTITY.guard(gameScene, 300, 200);
+    //ENTITY.guard(gameScene, 300, 200);
     INTERFACE.setup(stage);
 
     state = play;

@@ -122,7 +122,7 @@ WORLD.areCollide = function(r1, r2) {
 
     //Check for a collision on the x axis
     if (Math.abs(vx) < combinedHalfWidths) {
-        //A collision might be occuring. Check for a collision on the y axis
+        //A collision might be occurring. Check for a collision on the y axis
         hit = Math.abs(vy) < combinedHalfHeights;
     } else {
         //There's no collision on the x axis
@@ -136,8 +136,8 @@ WORLD.tick = function() {
     WORLD.enemyBullets.forEach(
         function(b) {
             if(WORLD.areCollide(b, WORLD.player)) {
-                WORLD.player.collide(WORLD.player, b);
-                b.collide(b, WORLD.player);
+                WORLD.player.collide(b);
+                b.collide(WORLD.player);
             }
         }
     );
@@ -146,8 +146,8 @@ WORLD.tick = function() {
             WORLD.enemies.forEach(
                 function(e) {
                     if(WORLD.areCollide(b, e)) {
-                        e.collide(e, b);
-                        b.collide(b, e);
+                        e.collide(b);
+                        b.collide(e);
                     }
                 }
             )
@@ -157,7 +157,7 @@ WORLD.tick = function() {
     for(var i = 0; i < WORLD.entities.length; ++i) {
         var e = WORLD.entities[i];
         if(!e.removed)
-            e.tick(e);
+            e.tick();
         else {
             WORLD.entities.splice(i--, 1);
             switch(e.category) {
@@ -174,8 +174,10 @@ WORLD.tick = function() {
                     WORLD.enemyBullets.splice(WORLD.enemyBullets.indexOf(e), 1);
                     break;
             }
-            e.visible = false;
-            gameScene.removeChild(e);
+            if(e.sprite != null) {
+                e.sprite.visible = false;
+                gameScene.removeChild(e.sprite);
+            }
         }
     }
 };
