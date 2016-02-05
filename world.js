@@ -24,7 +24,7 @@ WORLD.loadLevel = function(scene) {
     WORLD.textures = [
         [null],
         [PIXI.Texture.fromFrame('wall.png')],
-        [PIXI.Texture.fromFrame('dirt1.png'), PIXI.Texture.fromFrame('dirt2.png'), PIXI.Texture.fromFrame('dirt3.png'), PIXI.Texture.fromFrame('dirt4.png'), PIXI.Texture.fromFrame('dirt5.png'), PIXI.Texture.fromFrame('dirt6.png'), PIXI.Texture.fromFrame('dirt7.png'), PIXI.Texture.fromFrame('dirt8.png')],
+        [PIXI.Texture.fromFrame('dirt1.png'), PIXI.Texture.fromFrame('dirt2.png'), PIXI.Texture.fromFrame('dirt3.png'), PIXI.Texture.fromFrame('dirt4.png'), PIXI.Texture.fromFrame('dirt5.png'), PIXI.Texture.fromFrame('dirt6.png'), PIXI.Texture.fromFrame('dirt7.png'), PIXI.Texture.fromFrame('dirt8.png'), PIXI.Texture.fromFrame('dirt9.png'), PIXI.Texture.fromFrame('dirt10.png'), PIXI.Texture.fromFrame('dirt11.png'), PIXI.Texture.fromFrame('dirt12.png')],
         [PIXI.Texture.fromFrame('grass.png')],
         [PIXI.Texture.fromFrame('step.png')]
     ];
@@ -132,7 +132,25 @@ WORLD.areCollide = function(r1, r2) {
     return hit;
 };
 
+var time = 8;
 WORLD.tick = function() {
+    /*if(time <= 0) {
+        for (var i = 0; i < WORLD.X; ++i) {
+            for (var j = 0; j < WORLD.Y; ++j) {
+                if(WORLD.blocks[i][j] == 2) {
+                    if(Math.random() > 0.3) {
+                        var t = WORLD.textures[2].indexOf(WORLD.sprites[i][j].texture);
+                        ++t;
+                        t %= 12;
+                        WORLD.sprites[i][j].texture = WORLD.textures[2][t];
+                    }
+                }
+            }
+        }
+        time = 5;
+    }
+    --time;*/
+
     WORLD.enemyBullets.forEach(
         function(b) {
             if(WORLD.areCollide(b, WORLD.player)) {
@@ -153,7 +171,6 @@ WORLD.tick = function() {
             )
         }
     );
-    WORLD.player.tick(WORLD.player);
     for(var i = 0; i < WORLD.entities.length; ++i) {
         var e = WORLD.entities[i];
         if(!e.removed)

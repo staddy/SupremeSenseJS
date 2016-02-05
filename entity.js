@@ -167,12 +167,12 @@ ENTITY.BULLETS.Blade.prototype.collide = function(e) {
     if(!this.hit) {
         e.health -= this.damage;
         //fixme !!!
-        //e.effects.push(ENTITY.slow(e));
-        //e.effects.push(ENTITY.knockback(e, ENTITY.looksRight(b)));
+        new ENTITY.EFFECTS.Slow(e);
+        new ENTITY.EFFECTS.KnockBack(e);
         this.hit = true;
-        //for(var i = 0; i < 20; ++i) {
-        //    ENTITY.blood(gameScene, b.x + b.width / 2, b.y + b.height / 2);
-        //}
+        for(var i = 0; i < 20; ++i) {
+            new ENTITY.Blood(this.x + this.width / 2, this.y + this.height / 2, gameScene);
+        }
     }
 };
 
@@ -202,9 +202,7 @@ ENTITY.Person = function(x, y, scene, textures, category, lifeTime) {
 extend(ENTITY.Person, ENTITY.PhysicalObject);
 ENTITY.Person.prototype.tick = function() {
     ENTITY.Person.super.tick.call(this);
-    if((this.vx == 0) || (this.canRun == false)) {
-        this.runs = false;
-    }
+    this.runs = ((this.vx != 0) && (this.canRun != false));
     if((this.runs) &&
         (((this.vx > 0) && !this.looksRight()) ||
         ((this.vx < 0) && this.looksRight()))) {
@@ -299,6 +297,38 @@ ENTITY.EFFECTS.Dash.prototype.tick = function() {
     }
 };
 
+ENTITY.EFFECTS.Slow = function(e) {
+    ENTITY.EFFECTS.Dash.super.constructor.call(this, ENTITY.CATEGORIES.EFFECT, 60 * 3);
+    this.entity = e;
+    this.entity.speed /= 2;
+    this.entity.jumpSpeed /= 2;
+    this.entity.effects.push(this);
+};
+extend(ENTITY.EFFECTS.Slow, ENTITY.Object);
+ENTITY.EFFECTS.Slow.prototype.tick = function() {
+    ENTITY.EFFECTS.Slow.super.tick.call(this);
+    if(this.removed) {
+        this.entity.speed *= 2;
+        this.entity.jumpSpeed *= 2;
+    }
+};
+
+ENTITY.EFFECTS.KnockBack = function(e) {
+    ENTITY.EFFECTS.KnockBack.super.constructor.call(this, ENTITY.CATEGORIES.EFFECT, 15);
+    this.entity = e;
+    this.entity.canRun = false;
+    this.entity.vx = (this.entity.looksRight() ? 1 : -1) * 3;
+    this.entity.vy -= 10;
+    this.entity.effects.push(this);
+};
+extend(ENTITY.EFFECTS.KnockBack, ENTITY.Object);
+ENTITY.EFFECTS.KnockBack.prototype.tick = function() {
+    ENTITY.EFFECTS.KnockBack.super.tick.call(this);
+    if(this.removed) {
+        this.entity.canRun = true;
+    }
+};
+
 ENTITY.Player = function(x, y, scene) {
     var textures = [];
     for(var i = 1; i <= 8; ++i) {
@@ -358,96 +388,54 @@ ENTITY.Player.prototype.tick = function() {
     INTERFACE.setEnergy(this.energy, this.maxEnergy);
 };
 
-/*
-ENTITY.guard = function(scene, x, y) {
+ENTITY.AI = {};
+ENTITY.AI.isFloor = function(e) {
+    var x = e.x + (e.vx > 0 ? e.width : - 1);
+    var y = e.y + e.height;
+    var p = {x: x, y: y, width: 1, height: 1, category: ENTITY.CATEGORIES.NONE};
+    return !WORLD.isFree(0, 0, p);
+};
+
+ENTITY.Guard = function(x, y, scene) {
     var textures = [];
     for(var i = 1; i <= 8; ++i) {
         textures.push(PIXI.Texture.fromFrame('character' + i + '.png'));
     }
-    var guard = ENTITY.person(scene, x, y, textures, ENTITY.CATEGORIES.ENEMY);
-    guard.AIcycle = 60;
-    guard.AIcurrent = guard.AIcycle;
-    guard.shouldLeft = false;
-    guard.shouldRight = false;
-    guard.randomness = 0.01;
+    ENTITY.Guard.super.constructor.call(this, x, y, scene, textures, ENTITY.CATEGORIES.ENEMY, -1);
+    this.weapon = new ENTITY.WEAPONS.Knife(scene, this, ENTITY.CATEGORIES.ENEMYBULLET, 10);
+    this.maxHealth = 15;
+};
+extend(ENTITY.Guard, ENTITY.Person);
+ENTITY.Guard.prototype.tick = function() {
+    ENTITY.Guard.super.tick.call(this);
+    if(this.canRun && this.onGround && !ENTITY.AI.isFloor(this))
+        this.vx = -this.vx;
 
-    guard.maxHealth = 10;
-    guard.tick = function(e) {
-        var r = Math.random();
-        if(r > (1 - e.randomness)) {
-            e.shouldRight = true;
-            e.shouldLeft = false;
-        } else if(r < e.randomness) {
-            e.shouldRight = false;
-            e.shouldLeft = true;
+    if(this.health <= 0) {
+        this.removed = true;
+        for(var i = 0; i < 40; ++i) {
+            new ENTITY.Blood(this.x + this.width / 2, this.y + this.height / 2, gameScene);
         }
-        if(e.shouldLeft) {
-            e.vx = -e.speed;
-            e.runsRight = false;
-            e.runsLeft = true;
-            e.running = true;
-            e.AIcurrent = e.AIcycle;
-            e.shouldLeft = false;
-            e.shouldRight = false;
-        } else if(e.shouldRight) {
-            e.vx = e.speed;
-            e.runsRight = true;
-            e.runsLeft = false;
-            e.running = true;
-            e.AIcurrent = e.AIcycle;
-            e.shouldLeft = false;
-            e.shouldRight = false;
-        }
-        if(e.AIcurrent <= 0) {
-            if (e.canRun) {
-                if (WORLD.player.x > e.x) {
-                    e.shouldLeft = false;
-                    e.shouldRight = true;
-                }
-                else {
-                    e.shouldLeft = true;
-                    e.shouldRight = false;
-                }
-            }
-            e.AIcurrent = e.AIcycle;
-        }
-        --e.AIcurrent;
-        if((Math.abs(WORLD.player.x - e.x) < 20) && (Math.abs(WORLD.player.y - e.y) < 40))
-            e.weapon.hit(e.weapon);
-        if(Math.random() < e.randomness)
-            if(e.onGround)
-                e.vy = -e.jumpSpeed;
-        e.down = (WORLD.player.y > e.y);
-        ENTITY.personTick(e);
-
-        if(e.health <= 0) {
-            e.removed = true;
-            for(var i = 0; i < 40; ++i) {
-                ENTITY.blood(gameScene, e.x + e.width / 2, e.y + e.height / 2);
-            }
-        }
-    };
-    guard.collide = function(e, b) {
-
-    };
-    guard.hitWall = function(e, xa, ya) {
-        if(xa > 0) {
-            e.shouldRight  = false;
-            e.shouldLeft = true;
-        } else if(xa < 0) {
-            e.shouldRight  = true;
-            e.shouldLeft = false;
-        }
-    };
-    guard.category = ENTITY.CATEGORIES.ENEMY;
-    guard.index = WORLD.enemies.length;
-    WORLD.entities.push(guard);
-    WORLD.enemies.push(guard);
-    return guard;
+    }
+};
+ENTITY.Guard.prototype.hitWall = function(xa, ya) {
+    ENTITY.Guard.super.hitWall.call(this, xa, ya);
+    if(xa != 0 && this.canRun) {
+        this.vx = -this.vx;
+    }
 };
 
-ENTITY.bullet = function(scene, x1, y1, x2, y2) {
-    var bulletSpeed = 17.0;
+ENTITY.Blood = function(x, y, scene) {
+    ENTITY.Blood.super.constructor.call(this, x, y, new PIXI.Sprite(PIXI.Texture.fromFrame('blood.png')), scene, ENTITY.CATEGORIES.NONE, 60 * 3);
+    this.vx = Math.random() * 10 - 5;
+    this.vy = Math.random() * 10 - 5;
+    this.bounce = 0.5;
+};
+extend(ENTITY.Blood, ENTITY.PhysicalObject);
+
+ENTITY.Bullet = function(x1, y1, x2, y2, scene, category) {
+    ENTITY.Bullet.super.constructor.call(this, x1, y1, new PIXI.Sprite(PIXI.Texture.fromFrame('bullet.png')), scene, category, 600);
+    var bulletSpeed = 11.0;
     var bya, bxa;
     if((y2 - y1) != 0) {
         var k = ((x2 - x1) / (y2 - y1));
@@ -457,111 +445,23 @@ ENTITY.bullet = function(scene, x1, y1, x2, y2) {
         bya = 0;
         bxa = bulletSpeed * Math.sign(x2 - x1);
     }
-    var bullet = new PIXI.Sprite(PIXI.Texture.fromFrame('bullet.png'));
-    bullet.scale.x = bullet.scale.y = SCALE;
-    bullet.x = x1;
-    bullet.y = y1;
-    bullet.rotation = (k != 0) ? Math.atan(1/k) : (Math.PI / 2 * Math.sign(y2 - y1));
-    bullet.vx = bxa;
-    bullet.vy = bya;
-
-    bullet.removed = false;
-    bullet.tick = function(e) {
-        ENTITY.tryMove(e, e.vx, e.vy);
-        if(e.x < 0 || e.y < 0 || e.x > WORLD.WIDTH|| e.y > WORLD.HEIGHT)
-            e.removed = true;
-    };
-    bullet.hitWall = function(e, xa, ya) {
-        e.removed = true;
-    };
-    bullet.collide = function(b, e) {b.removed = true;e.health -= 10;};
-    WORLD.entities.push(bullet);
-    scene.addChild(bullet);
-    return bullet;
+    this.sprite.rotation = (k != 0) ? Math.atan(1/k) : (Math.PI / 2 * Math.sign(y2 - y1)) + Math.PI;
+    this.width = this.sprite.width;
+    this.height = this.sprite.height;
+    this.vx = bxa;
+    this.vy = bya;
+    this.gravity = false;
+};
+extend(ENTITY.Bullet, ENTITY.PhysicalObject);
+ENTITY.Bullet.prototype.hitWall = function(xa, ya) {
+    this.removed = true;
+};
+ENTITY.Bullet.prototype.collide = function(e){
+    this.removed = true;
+    e.health -= 10;
 };
 
-ENTITY.playerBullet = function(scene, x1, y1, x2, y2) {
-    var bullet = ENTITY.bullet(scene, x1, y1, x2, y2);
-    bullet.index = WORLD.playerBullets.length;
-    WORLD.playerBullets.push(bullet);
-    bullet.category = ENTITY.CATEGORIES.PLAYERBULLET;
-};
-
-ENTITY.enemyBullet = function(scene, x1, y1, x2, y2) {
-    var bullet = ENTITY.bullet(scene, x1, y1, x2, y2);
-    bullet.index = WORLD.enemyBullets.length;
-    WORLD.enemyBullets.push(bullet);
-    bullet.category = ENTITY.CATEGORIES.ENEMYBULLET;
-};
-
-ENTITY.blood = function(scene, x, y) {
-    var blood = new PIXI.Sprite(PIXI.Texture.fromFrame('blood.png'));
-    blood.scale.x = blood.scale.y = SCALE;
-
-    blood.lifeTime = 60 * 3;
-    blood.category = ENTITY.CATEGORIES.NONE;
-
-    blood.x = x;
-    blood.y = y;
-    blood.vx = Math.random() * 10 - 5;
-    blood.vy = Math.random() * 10 - 5;
-    blood.removed = false;
-    blood.bounce = 0.5;
-
-    blood.tick = function(e) {
-        e.vy += WORLD.GRAVITY;
-        ENTITY.tryMove(e, e.vx, e.vy);
-        if(e.x < 0 || e.y < 0 || e.x > WORLD.WIDTH|| e.y > WORLD.HEIGHT)
-            e.removed = true;
-        --e.lifeTime;
-        if(e.lifeTime <= 0)
-            e.removed = true;
-    };
-
-    blood.hitWall = function(e, xa, ya) {
-    };
-
-    WORLD.entities.push(blood);
-    scene.addChild(blood);
-};
-
-ENTITY.slow = function(e) {
-    var slow = {};
-    slow.duration = 120;
-    slow.oldSpeed = e.speed;
-    slow.target = e;
-    slow.removed = false;
-    e.speed /= 2;
-    e.jumpSpeed /= 2;
-    slow.tick = function(e) {
-        --e.duration;
-        if(e.duration <= 0) {
-            e.target.speed *= 2;
-            e.target.jumpSpeed *= 2;
-            e.removed = true;
-        }
-    };
-    return slow;
-};
-
-ENTITY.knockback = function(e, right) {
-    var knockback = {};
-    knockback.duration = 15;
-    knockback.target = e;
-    knockback.removed = false;
-    e.canRun = false;
-    e.vx = (right ? 1 : -1) * 3;
-    e.vy -= 4;
-    knockback.tick = function(e) {
-        --e.duration;
-        if(e.duration <= 0) {
-            e.target.canRun = true;
-            e.removed = true;
-        }
-    };
-    return knockback;
-};
-
+/*
 ENTITY.gun = function(scene, e) {
     var gun = new PIXI.Sprite(PIXI.Texture.fromFrame('gun.png'));
     gun.owner = e;

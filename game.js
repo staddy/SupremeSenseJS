@@ -33,7 +33,7 @@ function setup() {
     WORLD.loadLevel(gameScene);
 
     new ENTITY.Player(200, 200, gameScene);
-    //ENTITY.guard(gameScene, 300, 200);
+    (new ENTITY.Guard(300, 200, gameScene)).vx = 3;
     //ENTITY.guard(gameScene, 300, 200);
     //ENTITY.guard(gameScene, 300, 200);
     //ENTITY.guard(gameScene, 300, 200);
