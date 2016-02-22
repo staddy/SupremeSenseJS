@@ -168,7 +168,7 @@ ENTITY.BULLETS.Blade.prototype.collide = function(e) {
         e.health -= this.damage;
         //fixme !!!
         new ENTITY.EFFECTS.Slow(e);
-        new ENTITY.EFFECTS.KnockBack(e);
+        new ENTITY.EFFECTS.KnockBack(e, this);
         this.hit = true;
         for(var i = 0; i < 20; ++i) {
             new ENTITY.Blood(this.x + this.width / 2, this.y + this.height / 2, gameScene);
@@ -268,12 +268,43 @@ ENTITY.WEAPONS.Knife = function(scene, e, category, damage) {
     this.damage = damage;
 };
 extend(ENTITY.WEAPONS.Knife, ENTITY.Skill);
-ENTITY.WEAPONS.Knife.prototype.hit = function(k) {
+ENTITY.WEAPONS.Knife.prototype.hit = function() {
     if(this.timer <= 0) {
         if(!(new this.effect(this.scene, this.damage, this.entity, this.category).removed)) {
             this.timer = this.cooldown;
         }
     }
+};
+
+ENTITY.WEAPONS.Gun = function(scene, e, category, damage) {
+    ENTITY.WEAPONS.Gun.super.constructor.call(this, 0, 0, new PIXI.Sprite(PIXI.Texture.fromFrame('gun.png')), scene, category, -1);
+    this.damage = damage;
+    this.timer = 0;
+    this.cooldown = 30;
+    this.entity = e;
+    this.x = e.x + e.width / 2 + (e.looksRight() ? 0 : -this.width);
+    this.y = e.y + e.height / 2 - 4;
+    if(this.looksRight() != e.looksRight())
+        this.flip();
+};
+extend(ENTITY.WEAPONS.Gun, ENTITY.PhysicalObject);
+ENTITY.WEAPONS.Gun.prototype.hit = function() {
+    if(this.timer <= 0) {
+        new ENTITY.Bullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? 11 : -11, 0, gameScene, ENTITY.CATEGORIES.PLAYERBULLET);
+        this.timer = this.cooldown;
+    }
+};
+ENTITY.WEAPONS.Gun.prototype.tick = function() {
+    if(this.entity != null) {
+        ENTITY.SpriteObject.prototype.tick.call(this);
+        var e = this.entity;
+        this.x = e.x + e.width / 2 + (e.looksRight() ? 0 : -this.width);
+        this.y = e.y + e.height / 2 - 4;
+        if(this.looksRight() != e.looksRight())
+            this.flip();
+    }
+    if(this.timer > 0)
+        --this.timer;
 };
 
 ENTITY.EFFECTS = {};
@@ -313,11 +344,11 @@ ENTITY.EFFECTS.Slow.prototype.tick = function() {
     }
 };
 
-ENTITY.EFFECTS.KnockBack = function(e) {
+ENTITY.EFFECTS.KnockBack = function(e, s) {
     ENTITY.EFFECTS.KnockBack.super.constructor.call(this, ENTITY.CATEGORIES.EFFECT, 15);
     this.entity = e;
     this.entity.canRun = false;
-    this.entity.vx = (this.entity.looksRight() ? 1 : -1) * 3;
+    this.entity.vx = (s.looksRight() ? 1 : -1) * 3;
     this.entity.vy -= 10;
     this.entity.effects.push(this);
 };
@@ -336,18 +367,19 @@ ENTITY.Player = function(x, y, scene) {
     }
     ENTITY.Player.super.constructor.call(this, x, y, scene, textures, ENTITY.CATEGORIES.PLAYER, -1);
     WORLD.player = this;
-    this.weapon = new ENTITY.WEAPONS.Knife(scene, this, ENTITY.CATEGORIES.PLAYERBULLET, 10);
+    //this.weapon = new ENTITY.WEAPONS.Knife(scene, this, ENTITY.CATEGORIES.PLAYERBULLET, 10);
+    this.weapon = new ENTITY.WEAPONS.Gun(scene, this, ENTITY.CATEGORIES.PLAYERBULLET, 10);
     this.dash = new ENTITY.Skill(this, ENTITY.EFFECTS.Dash, 30, 30);
 };
 extend(ENTITY.Player, ENTITY.Person);
 ENTITY.Player.prototype.tick = function() {
     ENTITY.Player.super.tick.call(this);
-    this.down = (INPUT.down[INPUT.KEY.DOWN.n] ? this.onGround : false);
+    this.down = (INPUT.down[KEYS.DOWN] ? this.onGround : false);
     if(this.canRun) {
-        if(INPUT.down[INPUT.KEY.RIGHT.n]) {
+        if(INPUT.down[KEYS.RIGHT]) {
             this.runs = true;
             this.vx = this.speed;
-        } else if (INPUT.down[INPUT.KEY.LEFT.n]) {
+        } else if (INPUT.down[KEYS.LEFT]) {
             this.runs = true;
             this.vx = -this.speed;
         } else {
@@ -355,16 +387,17 @@ ENTITY.Player.prototype.tick = function() {
             this.runs = false;
         }
         if(this.onGround) {
-            if(INPUT.down[INPUT.KEY.UP.n])
+            if(INPUT.down[KEYS.UP])
                 this.vy = -this.jumpSpeed;
         }
     }
-    if(INPUT.down[INPUT.KEY.SHIFT.n]) {
+    if(INPUT.down[KEYS.Z]) {
         this.dash.cast();
     }
-    if(INPUT.down[INPUT.KEY.DOWN.n] && this.onGround && this.canRun) {
+    if(INPUT.down[KEYS.DOWN] && this.onGround && this.canRun) {
         if(this.height == 40) {
             this.y += 20;
+            this.sprite.y += 20;
         }
         this.height = 20;
         this.sprite.height = 20;
@@ -374,13 +407,14 @@ ENTITY.Player.prototype.tick = function() {
         if(WORLD.isFree(0, -20, this)) {
             if(this.height == 20) {
                 this.y -= 20;
+                this.sprite.y -= 20;
             }
             this.height = 40;
             this.sprite.height = 40;
             this.down = false;
         }
     }
-    if(INPUT.down[INPUT.KEY.SPACE.n])
+    if(INPUT.down[KEYS.X])
         if(this.weapon != null)
             this.weapon.hit();
 
@@ -419,9 +453,10 @@ ENTITY.Guard.prototype.tick = function() {
     }
 };
 ENTITY.Guard.prototype.hitWall = function(xa, ya) {
-    ENTITY.Guard.super.hitWall.call(this, xa, ya);
     if(xa != 0 && this.canRun) {
         this.vx = -this.vx;
+    } else {
+        ENTITY.Guard.super.hitWall.call(this, xa, ya);
     }
 };
 
@@ -433,9 +468,9 @@ ENTITY.Blood = function(x, y, scene) {
 };
 extend(ENTITY.Blood, ENTITY.PhysicalObject);
 
-ENTITY.Bullet = function(x1, y1, x2, y2, scene, category) {
+ENTITY.Bullet = function(x1, y1, bxa, bya, scene, category) {
     ENTITY.Bullet.super.constructor.call(this, x1, y1, new PIXI.Sprite(PIXI.Texture.fromFrame('bullet.png')), scene, category, 600);
-    var bulletSpeed = 11.0;
+    /*var bulletSpeed = 11.0;
     var bya, bxa;
     if((y2 - y1) != 0) {
         var k = ((x2 - x1) / (y2 - y1));
@@ -445,7 +480,7 @@ ENTITY.Bullet = function(x1, y1, x2, y2, scene, category) {
         bya = 0;
         bxa = bulletSpeed * Math.sign(x2 - x1);
     }
-    this.sprite.rotation = (k != 0) ? Math.atan(1/k) : (Math.PI / 2 * Math.sign(y2 - y1)) + Math.PI;
+    this.sprite.rotation = (k != 0) ? Math.atan(1/k) : (Math.PI / 2 * Math.sign(y2 - y1)) + Math.PI;*/
     this.width = this.sprite.width;
     this.height = this.sprite.height;
     this.vx = bxa;
@@ -460,18 +495,6 @@ ENTITY.Bullet.prototype.collide = function(e){
     this.removed = true;
     e.health -= 10;
 };
-
-/*
-ENTITY.gun = function(scene, e) {
-    var gun = new PIXI.Sprite(PIXI.Texture.fromFrame('gun.png'));
-    gun.owner = e;
-    gun.tick = function(e) {
-        e.x = e.owner.x + e.owner.width / 2 + (ENTITY.looksRight(e) ? 1 : -1) * 5;
-        e.y = e.owner.y + e.owner.height / 2 - 4;
-    };
-    scene.addChild(gun);
-};
-*/
 
 ENTITY.CATEGORIES = {NONE: 0, PLAYER: 1, ENEMY: 2, PLAYERBULLET: 3, ENEMYBULLET: 4, SKILL: 5, EFFECT: 6, WEAPON: 7};
 

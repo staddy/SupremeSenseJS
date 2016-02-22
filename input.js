@@ -1,58 +1,44 @@
 var INPUT = {};
 
-INPUT.KEY = {
-    SPACE: {n: 0, code: 32},
-    LEFT: {n: 1, code: 37},
-    UP: {n: 2, code: 38},
-    RIGHT: {n: 3, code: 39},
-    DOWN: {n: 4, code: 40},
-    A: {n: 1, code: 65},
-    W: {n: 2, code: 87},
-    D: {n: 3, code: 68},
-    S: {n: 4, code: 83},
-    SHIFT: {n: 5, code: 16}
+KEYS = {
+    LEFT: 0,
+    UP: 1,
+    RIGHT: 2,
+    DOWN: 3,
+    Z: 4,
+    X: 5,
+    C: 6,
+    A: 7,
+    S: 8,
+    D: 9
 };
 
-INPUT.down = [false, false, false, false, false];
+CODES = {
+    37: KEYS.LEFT,
+    38: KEYS.UP,
+    39: KEYS.RIGHT,
+    40: KEYS.DOWN,
+    90: KEYS.Z,
+    88: KEYS.X,
+    67: KEYS.C,
+    65: KEYS.A,
+    83: KEYS.S,
+    68: KEYS.D
+};
+
+INPUT.down = [];
 
 INPUT.onKey = function(ev, key, down) {
+    ev.preventDefault();
+
     if((state == INTERFACE.telling) && down) {
         INTERFACE.skip = true;
         ev.preventDefault();
         return false;
     }
-    var KEY = INPUT.KEY;
-    var input = INPUT.down;
-    switch(key) {
-        case KEY.SPACE.code:
-            input[KEY.SPACE.n] = down;
-            ev.preventDefault();
-            return false;
-        case KEY.W.code:
-        case KEY.UP.code:
-            input[KEY.UP.n] = down;
-            ev.preventDefault();
-            return false;
-        case KEY.S.code:
-        case KEY.DOWN.code:
-            input[KEY.DOWN.n] = down;
-            ev.preventDefault();
-            return false;
-        case KEY.A.code:
-        case KEY.LEFT.code:
-            input[KEY.LEFT.n] = down;
-            ev.preventDefault();
-            return false;
-        case KEY.D.code:
-        case KEY.RIGHT.code:
-            input[KEY.RIGHT.n] = down;
-            ev.preventDefault();
-            return false;
-        case KEY.SHIFT.code:
-            input[KEY.SHIFT.n] = down;
-            ev.preventDefault();
-            return false;
-    }
+
+    INPUT.down[CODES[key]] = down;
+    return false;
 };
 
 document.addEventListener('keydown', function(ev) { return INPUT.onKey(ev, ev.keyCode, true);  }, false);
@@ -81,6 +67,11 @@ INPUT.onMouseDown = function(eventData) {
 INPUT.onTouch = function(eventData) {
     //eventData.preventDefault();
 
+    if(state == INTERFACE.telling) {
+        INTERFACE.skip = true;
+        return;
+    }
+
     var ex = eventData.data.originalEvent.touches[0].pageX;
     var ey = eventData.data.originalEvent.touches[0].pageY;
     INPUT.onDown(ex, ey);
@@ -88,7 +79,7 @@ INPUT.onTouch = function(eventData) {
 
 INPUT.onDown = function(ex, ey) {
     //WORLD.player.health -= 10;
-    new ENTITY.Bullet(WORLD.player.x, WORLD.player.y, ex, ey, gameScene, ENTITY.CATEGORIES.PLAYERBULLET);
+    //new ENTITY.Bullet(WORLD.player.x, WORLD.player.y, ex, ey, gameScene, ENTITY.CATEGORIES.PLAYERBULLET);
     //for(var i = 0; i < 20; ++i) {
     //    ENTITY.blood(gameScene, WORLD.player.x, WORLD.player.y);
     //}

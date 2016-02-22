@@ -134,7 +134,7 @@ WORLD.areCollide = function(r1, r2) {
 
 var time = 8;
 WORLD.tick = function() {
-    /*if(time <= 0) {
+    if(time <= 0) {
         for (var i = 0; i < WORLD.X; ++i) {
             for (var j = 0; j < WORLD.Y; ++j) {
                 if(WORLD.blocks[i][j] == 2) {
@@ -149,7 +149,7 @@ WORLD.tick = function() {
         }
         time = 5;
     }
-    --time;*/
+    --time;
 
     WORLD.enemyBullets.forEach(
         function(b) {
