@@ -1,5 +1,36 @@
 var ENTITY = {};
 
+ENTITY.Animation = function(frameTime, loop, textures, sequence, entity) {
+    this.frameTime = frameTime;
+    this.loop = loop;
+    this.textures = textures;
+    this.sequence = sequence;
+    this.entity = entity;
+    this.currentFrame = 0;
+    this.currentTick = 0;
+
+    this.reset = function() {
+        this.currentFrame = 0;
+        this.currentTick = 0;
+        this.entity.sprite.texture = this.textures[this.sequence[0]];
+    };
+
+    this.tick = function() {
+        if(this.currentTick >= this.frameTime) {
+            this.currentTick = 0;
+            this.currentFrame += 1;
+        }
+        if(this.currentFrame >= this.sequence.length()) {
+            if(this.loop)
+                this.currentFrame = 0;
+            else
+                this.currentFrame = this.sequence.length() - 1;
+        }
+        entity.sprite.texture = this.textures[this.sequence[this.currentFrame]];
+        ++this.currentTick;
+    };
+};
+
 ENTITY.Object = function(category, lifeTime) {
     this.removed = false;
     this.sprite = null;
