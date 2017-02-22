@@ -35,10 +35,14 @@ function setup() {
     WORLD.loadLevel(gameScene);
 
     new ENTITY.Player(200, 200, gameScene);
-    (new ENTITY.Guard(300, 200, gameScene)).vx = 3;
-    //ENTITY.guard(gameScene, 300, 200);
-    //ENTITY.guard(gameScene, 300, 200);
-    //ENTITY.guard(gameScene, 300, 200);
+    (new ENTITY.Guard(300, 200, gameScene)).vx = -3;
+    //(new ENTITY.Guard(300, 200, gameScene)).vx = 5;
+    //new ENTITY.Guard(300, 200, gameScene);
+    //(new ENTITY.Guard(600, 200, gameScene)).vx = 3;
+    //(new ENTITY.Guard(600, 200, gameScene)).vx = 5;
+    //new ENTITY.Guard(600, 200, gameScene);
+    //new ENTITY.Guard(600, 500, gameScene);
+    //new ENTITY.Guard(600, 300, gameScene);
     INTERFACE.setup(stage);
 
     state = play;
