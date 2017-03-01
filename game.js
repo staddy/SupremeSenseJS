@@ -35,7 +35,7 @@ function setup() {
     WORLD.loadLevel(gameScene);
 
     new ENTITY.Player(200, 200, gameScene);
-    (new ENTITY.Guard(300, 200, gameScene)).vx = -3;
+    (new ENTITY.Guard(300, 200, gameScene)).vx = -0.1;
     //(new ENTITY.Guard(300, 200, gameScene)).vx = 5;
     //new ENTITY.Guard(300, 200, gameScene);
     //(new ENTITY.Guard(600, 200, gameScene)).vx = 3;
@@ -43,14 +43,27 @@ function setup() {
     //new ENTITY.Guard(600, 200, gameScene);
     //new ENTITY.Guard(600, 500, gameScene);
     //new ENTITY.Guard(600, 300, gameScene);
-    INTERFACE.setup(stage);
+    INTERFACE.setup();
 
     state = play;
 
-    INTERFACE.phrases.push('розкол зіграв не останню роль, і я відчував,\nщо все здохло.');
-    INTERFACE.phrases.push('Я тоді ледь вибрався з серйозної хвороби,\nпро яку зараз говорити не хочеться, досить\nлише сказати, що цей наш жалюгідний і виснажливий');
-    INTERFACE.phrases.push('Я вперше зустрів Діна незабаром після того,\nяк ми з дружиною розлучилися.');
-    INTERFACE.tell(stage);
+    var portrait = new PIXI.Sprite(PIXI.Texture.fromFrame('face.png'));
+    portrait.scale.x = portrait.scale.y = 5;
+
+    INTERFACE.push(portrait, INTERFACE.EVENTS.PORTRAIT, true);
+    INTERFACE.push('Я вперше зустрів Діна незабаром після того,\nяк ми з дружиною розлучилися.');
+    INTERFACE.push('Я тоді ледь вибрався з серйозної хвороби,\nпро яку зараз говорити не хочеться, досить \nлише сказати, що цей наш жалюгідний');
+    INTERFACE.push('і виснажливий розкол зіграв не останню \nроль, і я відчував, що все здохло.');
+    INTERFACE.push(portrait, INTERFACE.EVENTS.PORTRAIT);
+    INTERFACE.push('Не розумiю по-украински.');
+    INTERFACE.push(portrait, INTERFACE.EVENTS.PORTRAIT, true);
+    INTERFACE.push('Не зрозумів останнє слово.');
+    INTERFACE.push(portrait, INTERFACE.EVENTS.PORTRAIT);
+    INTERFACE.push('...');
+    INTERFACE.push(null, INTERFACE.EVENTS.PORTRAIT);
+    INTERFACE.push('Не давайте святыни псам и не бросайте жемчуга\nвашего перед свиньями, чтобы они не попрали его\nногами своими и, обратившись, не растерзали вас.');
+
+    INTERFACE.tell();
 
     // start fps-meter
     fpsmeter.tickStart();

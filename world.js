@@ -6,7 +6,7 @@ WORLD.playerBullets = [];
 WORLD.enemyBullets = [];
 WORLD.player = {};
 
-WORLD.loadLevel = function(scene) {
+WORLD.loadLevel = function() {
     WORLD.WIDTH = WIDTH;
     WORLD.HEIGHT = HEIGHT;
     WORLD.TILE = 20;
@@ -18,7 +18,7 @@ WORLD.loadLevel = function(scene) {
     // Background
     WORLD.background = new PIXI.Sprite(PIXI.Texture.fromFrame('background.png'));
     WORLD.background.scale.x = WORLD.background.scale.y = SCALE;
-    scene.addChild(WORLD.background);
+    gameScene.addChild(WORLD.background);
 
     WORLD.sprites = new Array(WORLD.X);
     WORLD.textures = [
@@ -37,7 +37,7 @@ WORLD.loadLevel = function(scene) {
             WORLD.sprites[i][j].x = i * WORLD.TILE;
             WORLD.sprites[i][j].y = j * WORLD.TILE;
             WORLD.sprites[i][j].scale.x = WORLD.sprites[i][j].scale.y = SCALE;
-            scene.addChild(WORLD.sprites[i][j]);
+            gameScene.addChild(WORLD.sprites[i][j]);
             WORLD.setBlock(i, j, WORLD.blocks[i][j]);
         }
     }

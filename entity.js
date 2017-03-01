@@ -8,6 +8,7 @@ ENTITY.Animation = function(frameTime, loop, textures, sequence, entity) {
     this.entity = entity;
     this.currentFrame = 0;
     this.currentTick = 0;
+    this.play = true;
 
     this.reset = function() {
         this.currentFrame = 0;
@@ -16,18 +17,20 @@ ENTITY.Animation = function(frameTime, loop, textures, sequence, entity) {
     };
 
     this.tick = function() {
-        if(this.currentTick >= this.frameTime) {
-            this.currentTick = 0;
-            this.currentFrame += 1;
+        if(play) {
+            if (this.currentTick >= this.frameTime) {
+                this.currentTick = 0;
+                this.currentFrame += 1;
+            }
+            if (this.currentFrame >= this.sequence.length) {
+                if (this.loop)
+                    this.currentFrame = 0;
+                else
+                    this.currentFrame = this.sequence.length - 1;
+            }
+            entity.sprite.texture = this.textures[this.sequence[this.currentFrame]];
+            ++this.currentTick;
         }
-        if(this.currentFrame >= this.sequence.length) {
-            if(this.loop)
-                this.currentFrame = 0;
-            else
-                this.currentFrame = this.sequence.length - 1;
-        }
-        entity.sprite.texture = this.textures[this.sequence[this.currentFrame]];
-        ++this.currentTick;
     };
 };
 
@@ -396,7 +399,7 @@ ENTITY.Player = function(x, y, scene) {
     for(var i = 1; i <= 8; ++i) {
         textures.push(PIXI.Texture.fromFrame('character' + i + '.png'));
     }
-    this.animation = new ENTITY.Animation(0.5, true, textures, [0, 1, 2, 3, 4, 5, 6, 7], this);
+    this.animation = new ENTITY.Animation(4, true, textures, [0, 1, 2, 3, 4, 5, 6, 7], this);
     ENTITY.Player.super.constructor.call(this, x, y, scene, textures, ENTITY.CATEGORIES.PLAYER, -1);
     WORLD.player = this;
     this.weapon = new ENTITY.WEAPONS.Knife(scene, this, ENTITY.CATEGORIES.PLAYERBULLET, 10);

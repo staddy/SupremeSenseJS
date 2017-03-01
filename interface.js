@@ -17,23 +17,38 @@ INTERFACE.skip = true;
 INTERFACE.textStyle = null;
 INTERFACE.text = null;
 
-INTERFACE.setup = function(stage) {
+INTERFACE.portrait = null;
+INTERFACE.right = undefined;
+
+INTERFACE.EVENTS = {PHRASE: undefined, PORTRAIT: 0};
+INTERFACE.event = function(object, category, right) {
+    this.object = object;
+    this.category = category;
+    this.right = right;
+};
+INTERFACE.push = function(object, category, right) {
+    INTERFACE.phrases.push(new INTERFACE.event(object, category, right));
+};
+
+INTERFACE.setup = function() {
     INTERFACE.textStyle = {
         font : '32px Fixedsys'
         //align : 'right'
     };
 
-    INTERFACE.upFrame = new PIXI.Graphics();
-    INTERFACE.upFrame.beginFill(0x000000, 1);
-    INTERFACE.upFrame.drawRect(0, 0, WIDTH, INTERFACE.frameHeight);
-    INTERFACE.upFrame.y = -INTERFACE.frameHeight;
-    stage.addChild(INTERFACE.upFrame);
+    var blackRect = new PIXI.Graphics();
+    blackRect.beginFill(0x000000, 1);
+    blackRect.drawRect(0, 0, WIDTH, INTERFACE.frameHeight);
 
-    INTERFACE.downFrame = new PIXI.Graphics();
-    INTERFACE.downFrame.beginFill(0x000000, 1);
-    INTERFACE.downFrame.drawRect(0, 0, WIDTH, INTERFACE.frameHeight);
+    INTERFACE.upFrame = new PIXI.Container();
+    INTERFACE.upFrame.addChild(blackRect);
+    INTERFACE.upFrame.y = -INTERFACE.frameHeight;
+    gameScene.addChild(INTERFACE.upFrame);
+
+    INTERFACE.downFrame = new PIXI.Container();
+    INTERFACE.downFrame.addChild(blackRect);
     INTERFACE.downFrame.y = HEIGHT;
-    stage.addChild(INTERFACE.downFrame);
+    gameScene.addChild(INTERFACE.downFrame);
 
     INTERFACE.interfaceStage = new PIXI.Container();
 
@@ -51,7 +66,7 @@ INTERFACE.setup = function(stage) {
     INTERFACE.energyBar.position.y = INTERFACE.border * SCALE + 10 + 5;
     INTERFACE.interfaceStage.addChild(INTERFACE.energyBar);
 
-    stage.addChild(INTERFACE.interfaceStage);
+    gameScene.addChild(INTERFACE.interfaceStage);
 };
 
 INTERFACE.setHealth = function(value, maxValue) {
@@ -83,15 +98,18 @@ INTERFACE.setEnergy = function(value, maxValue) {
 INTERFACE.tell = function() {
     INTERFACE.interfaceStage.visible = false;
     INTERFACE.frameAnimationTick = INTERFACE.frameAnimationTicks;
+
     state = INTERFACE.telling;
 };
 
 INTERFACE.telling = function() {
     if(INTERFACE.frameAnimationTick != 0) {
-        INTERFACE.upFrame.y += INTERFACE.upFrame.height / INTERFACE.frameAnimationTicks;
-        INTERFACE.downFrame.y -= INTERFACE.downFrame.height / INTERFACE.frameAnimationTicks;
         var dy = HEIGHT / 2 - WORLD.player.y;
-        gameScene.y += (Math.abs(dy) > INTERFACE.frameHeight ? Math.sign(dy) * INTERFACE.frameHeight : dy) / INTERFACE.frameAnimationTicks;
+        var d = (Math.abs(dy) > INTERFACE.frameHeight ? Math.sign(dy) * INTERFACE.frameHeight : dy) / INTERFACE.frameAnimationTicks;
+        INTERFACE.upFrame.y += (INTERFACE.frameHeight / INTERFACE.frameAnimationTicks - d);
+        INTERFACE.downFrame.y -= (INTERFACE.frameHeight / INTERFACE.frameAnimationTicks + d);
+
+        gameScene.y += d;
         --INTERFACE.frameAnimationTick;
         return;
     }
@@ -106,22 +124,54 @@ INTERFACE.telling = function() {
         }
     }
     if(INTERFACE.skip) {
-        if(INTERFACE.phrase != null)
-            stage.removeChild(INTERFACE.phrase);
-        if(INTERFACE.phrases.length != 0) {
-            INTERFACE.text = INTERFACE.phrases.pop();
-            INTERFACE.phrase = new PIXI.BitmapText('', INTERFACE.textStyle);
-            INTERFACE.phrase.x = INTERFACE.border;
-            INTERFACE.phrase.y = HEIGHT - INTERFACE.frameHeight + INTERFACE.border;
+        if(INTERFACE.phrase != null) {
+            INTERFACE.downFrame.removeChild(INTERFACE.phrase);
+        } if(INTERFACE.phrases.length != 0) {
+            var current = INTERFACE.phrases.shift();
+            switch(current.category) {
+            case INTERFACE.EVENTS.PHRASE:
+                INTERFACE.text = current.object;
+                INTERFACE.phrase = new PIXI.BitmapText('', INTERFACE.textStyle);
+                INTERFACE.phrase.x = INTERFACE.border + (INTERFACE.portrait && (INTERFACE.right === undefined) ? INTERFACE.portrait.width + INTERFACE.border : 0);
+                INTERFACE.phrase.y = INTERFACE.border;
 
-            stage.addChild(INTERFACE.phrase);
-            INTERFACE.skip = false;
+                INTERFACE.downFrame.addChild(INTERFACE.phrase);
+                INTERFACE.skip = false;
+                break;
+            case INTERFACE.EVENTS.PORTRAIT:
+                if(INTERFACE.portrait) {
+                    INTERFACE.downFrame.removeChild(INTERFACE.portrait);
+                    if(INTERFACE.right) {
+                        INTERFACE.portrait.scale.x = -INTERFACE.portrait.scale.x;
+                        INTERFACE.portrait.anchor.x = 0;
+                    }
+                }
+                INTERFACE.portrait = current.object;
+                INTERFACE.right = current.right;
+                INTERFACE.portrait.x = (INTERFACE.right === undefined ? INTERFACE.border : WIDTH - INTERFACE.portrait.width - INTERFACE.border);
+                INTERFACE.portrait.y = INTERFACE.border;
+                if(INTERFACE.right) {
+                    INTERFACE.portrait.scale.x = -INTERFACE.portrait.scale.x;
+                    INTERFACE.portrait.anchor.x = 1;
+                }
+                INTERFACE.downFrame.addChild(INTERFACE.portrait);
+                INTERFACE.skip = true;
+                break;
+            }
         } else {
-            INTERFACE.upFrame.y = -INTERFACE.upFrame.height;
+            INTERFACE.upFrame.y = -INTERFACE.frameHeight;
             INTERFACE.downFrame.y = HEIGHT;
             INTERFACE.interfaceStage.visible = true;
             INTERFACE.skip = true;
             gameScene.y = 0;
+            if(INTERFACE.portrait) {
+                INTERFACE.downFrame.removeChild(INTERFACE.portrait);
+                if(INTERFACE.right) {
+                    INTERFACE.portrait.scale.x = -INTERFACE.portrait.scale.x;
+                    INTERFACE.portrait.anchor.x = 0;
+                }
+                INTERFACE.portrait = null;
+            }
             state = play;
         }
     }
