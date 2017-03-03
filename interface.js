@@ -20,6 +20,9 @@ INTERFACE.text = null;
 INTERFACE.portrait = null;
 INTERFACE.right = undefined;
 
+INTERFACE.selection = null;
+INTERFACE.selected = null;
+
 INTERFACE.EVENTS = {PHRASE: undefined, PORTRAIT: 0};
 INTERFACE.event = function(object, category, right) {
     this.object = object;
@@ -28,6 +31,28 @@ INTERFACE.event = function(object, category, right) {
 };
 INTERFACE.push = function(object, category, right) {
     INTERFACE.phrases.push(new INTERFACE.event(object, category, right));
+};
+
+INTERFACE.select = function(e) {
+    INTERFACE.removeSelection();
+    INTERFACE.selected = e;
+    var s = new PIXI.Graphics();
+    s.lineStyle(SCALE, 0xFFFF00);
+    s.drawRect(0, 0, e.width, e.height);
+    e.selection = s;
+    INTERFACE.selection = s;
+    INTERFACE.interfaceStage.addChild(s);
+    s.x = e.x;
+    s.y = e.y;
+};
+
+INTERFACE.removeSelection = function() {
+    if(INTERFACE.selected != null) {
+        INTERFACE.selected.selection = null;
+        INTERFACE.interfaceStage.removeChild(INTERFACE.selection);
+    }
+    INTERFACE.selected = null;
+    INTERFACE.selection = null;
 };
 
 INTERFACE.setup = function() {

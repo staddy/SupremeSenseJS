@@ -10,7 +10,9 @@ KEYS = {
     C: 6,
     A: 7,
     S: 8,
-    D: 9
+    D: 9,
+    Q: 10,
+    W: 11
 };
 
 CODES = {
@@ -23,10 +25,24 @@ CODES = {
     67: KEYS.C,
     65: KEYS.A,
     83: KEYS.S,
-    68: KEYS.D
+    68: KEYS.D,
+    81: KEYS.Q,
+    87: KEYS.W
 };
 
 INPUT.down = [];
+INPUT.previous = [];
+
+INPUT.tick = function() {
+    INPUT.previous = INPUT.down.slice();
+};
+
+INPUT.pressed = function(key) {
+    if(INPUT.down[key] && !INPUT.previous[key])
+        return true;
+    else
+        return false;
+};
 
 INPUT.onKey = function(ev, key, down) {
     ev.preventDefault();
@@ -78,9 +94,12 @@ INPUT.onTouch = function(eventData) {
 };
 
 INPUT.onDown = function(ex, ey) {
-    //WORLD.player.health -= 10;
-    //new ENTITY.Bullet(WORLD.player.x, WORLD.player.y, ex, ey, gameScene, ENTITY.CATEGORIES.PLAYERBULLET);
-    //for(var i = 0; i < 20; ++i) {
-    //    ENTITY.blood(gameScene, WORLD.player.x, WORLD.player.y);
-    //}
+    INTERFACE.removeSelection();
+    for(i = 0; i < WORLD.entities.length; ++i) {
+        var e = WORLD.entities[i];
+        if(WORLD.areCollide({x: ex, y: ey, width: 1, height: 1}, e)) {
+            INTERFACE.select(e);
+            break;
+        }
+    }
 };

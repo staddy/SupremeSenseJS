@@ -30,6 +30,10 @@ WORLD.loadLevel = function() {
     ];
 
     WORLD.blocks = [[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,1,1,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,4,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,4,0,0,4,0,0,4,4,0,0,4,0,0,4,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,4,0,0,4,0,0,4,4,0,0,4,0,0,4,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,4,0,0,0,0,0,4,4,0,0,0,0,0,4,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,1,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,1,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,1,1,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]];
+    WORLD.createSprites();
+};
+
+WORLD.createSprites = function() {
     for(var i = 0; i < WORLD.X; ++i) {
         WORLD.sprites[i] = new Array(WORLD.Y);
         for(var j = 0; j < WORLD.Y; ++j) {
@@ -48,6 +52,17 @@ WORLD.setBlock = function(x, y, b) {
     var t = Math.floor(WORLD.textures[b].length * Math.random());
     WORLD.sprites[x][y].texture = WORLD.textures[b][t];
     WORLD.sprites[x][y].visible = (b != 0);
+};
+
+WORLD.updateTextures = function() {
+    for(var i = 0; i < WORLD.X; ++i) {
+        for(var j = 0; j < WORLD.Y; ++j) {
+            var b = WORLD.blocks[i][j];
+            var t = Math.floor(WORLD.textures[b].length * Math.random());
+            WORLD.sprites[i][j].texture = WORLD.textures[b][t];
+            WORLD.sprites[i][j].visible = (b != 0);
+        }
+    }
 };
 
 /*
@@ -134,8 +149,9 @@ WORLD.areCollide = function(r1, r2) {
 
 var time = 8;
 WORLD.tick = function() {
+    var i;
     if(time <= 0) {
-        for (var i = 0; i < WORLD.X; ++i) {
+        for (i = 0; i < WORLD.X; ++i) {
             for (var j = 0; j < WORLD.Y; ++j) {
                 if(WORLD.blocks[i][j] == 2) {
                     if(Math.random() > 0.3) {
@@ -171,30 +187,34 @@ WORLD.tick = function() {
             )
         }
     );
-    for(var i = 0; i < WORLD.entities.length; ++i) {
+    for(i = 0; i < WORLD.entities.length; ++i) {
         var e = WORLD.entities[i];
         if(!e.removed)
             e.tick();
-        else {
-            WORLD.entities.splice(i--, 1);
-            switch(e.category) {
-                case ENTITY.CATEGORIES.ENEMY:
-                    // todo
-                    WORLD.enemies.splice(WORLD.enemies.indexOf(e), 1);
-                    break;
-                case ENTITY.CATEGORIES.PLAYERBULLET:
-                    // todo
-                    WORLD.playerBullets.splice(WORLD.playerBullets.indexOf(e), 1);
-                    break;
-                case ENTITY.CATEGORIES.ENEMYBULLET:
-                    //todo
-                    WORLD.enemyBullets.splice(WORLD.enemyBullets.indexOf(e), 1);
-                    break;
-            }
-            if(e.sprite != null) {
-                e.sprite.visible = false;
-                gameScene.removeChild(e.sprite);
-            }
-        }
+        else
+            WORLD.remove(e);
+    }
+};
+
+WORLD.remove = function(e) {
+    e.removed = true;
+    WORLD.entities.splice(WORLD.entities.indexOf(e), 1);
+    switch(e.category) {
+        case ENTITY.CATEGORIES.ENEMY:
+            // todo
+            WORLD.enemies.splice(WORLD.enemies.indexOf(e), 1);
+            break;
+        case ENTITY.CATEGORIES.PLAYERBULLET:
+            // todo
+            WORLD.playerBullets.splice(WORLD.playerBullets.indexOf(e), 1);
+            break;
+        case ENTITY.CATEGORIES.ENEMYBULLET:
+            //todo
+            WORLD.enemyBullets.splice(WORLD.enemyBullets.indexOf(e), 1);
+            break;
+    }
+    if(e.sprite != null) {
+        e.sprite.visible = false;
+        gameScene.removeChild(e.sprite);
     }
 };

@@ -60,18 +60,28 @@ ENTITY.Object.prototype.tick = function() {
         this.removed = true;
 };
 
-ENTITY.LevelObject = function(x, y, width, height, category, lifeTime) {
+ENTITY.LevelObject = function(x, y, scene, width, height, category, lifeTime) {
     ENTITY.LevelObject.super.constructor.call(this, category, lifeTime);
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
+    this.scene = scene;
 };
 extend(ENTITY.LevelObject, ENTITY.Object);
+ENTITY.LevelObject.prototype.tick = function() {
+    ENTITY.LevelObject.super.tick.call(this);
+    if(this.selection) {
+        this.selection.x = this.x;
+        this.selection.y = this.y;
+        this.selection.width = this.width;
+        this.selection.height = this.height;
+    }
+};
 
 ENTITY.SpriteObject = function(x, y, sprite, scene, category, lifeTime) {
     sprite.scale.x = sprite.scale.y = SCALE;
-    ENTITY.SpriteObject.super.constructor.call(this, x, y, sprite.width, sprite.height, category, lifeTime);
+    ENTITY.SpriteObject.super.constructor.call(this, x, y, scene, sprite.width, sprite.height, category, lifeTime);
     this.sprite = sprite;
     this.sprite.x = x;
     this.sprite.y = y;
@@ -205,7 +215,7 @@ ENTITY.BULLETS.Blade.prototype.collide = function(e) {
         new ENTITY.EFFECTS.KnockBack(e, this);
         this.hit = true;
         for(var i = 0; i < 20; ++i) {
-            new ENTITY.Blood(this.x + this.width / 2, this.y + this.height / 2, gameScene);
+            new ENTITY.Blood(this.x + this.width / 2, this.y + this.height / 2, this.scene);
         }
     }
 };
@@ -324,7 +334,7 @@ ENTITY.WEAPONS.Gun = function(scene, e, category, damage) {
 extend(ENTITY.WEAPONS.Gun, ENTITY.PhysicalObject);
 ENTITY.WEAPONS.Gun.prototype.hit = function() {
     if(this.timer <= 0) {
-        new ENTITY.Bullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? 11 : -11, 0, gameScene, ENTITY.CATEGORIES.PLAYERBULLET);
+        new ENTITY.Bullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? 11 : -11, 0, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
         this.timer = this.cooldown;
     }
 };
