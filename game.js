@@ -34,48 +34,8 @@ function setup() {
     gameScene = new PIXI.Container();
     stage.addChild(gameScene);
 
-    WORLD.loadLevel(gameScene);
-
-    new ENTITY.Player(0, 0, gameScene);
-    (new ENTITY.Guard(300, 200, gameScene)).vx = -0.1;
-    (new ENTITY.Guard(300, 200, gameScene)).vx = 5;
-    new ENTITY.Guard(300, 200, gameScene);
-    (new ENTITY.Guard(600, 200, gameScene)).vx = 3;
-    (new ENTITY.Guard(600, 200, gameScene)).vx = 5;
-    new ENTITY.Guard(600, 200, gameScene);
-    new ENTITY.Guard(600, 500, gameScene);
-    new ENTITY.Guard(600, 300, gameScene);
-    //new ENTITY.Player(200, 300, gameScene);
-    (new ENTITY.Guard(300, 300, gameScene)).vx = -0.1;
-    (new ENTITY.Guard(300, 300, gameScene)).vx = 5;
-    new ENTITY.Guard(300, 300, gameScene);
-    (new ENTITY.Guard(600, 300, gameScene)).vx = 3;
-    (new ENTITY.Guard(600, 300, gameScene)).vx = 5;
-    new ENTITY.Guard(600, 300, gameScene);
-    new ENTITY.Guard(700, 500, gameScene);
-    new ENTITY.Guard(700, 300, gameScene);
-    (new ENTITY.Guard(300, 200, gameScene)).vx = -0.1;
-    (new ENTITY.Guard(300, 200, gameScene)).vx = 5;
-    new ENTITY.Guard(300, 200, gameScene);
-    (new ENTITY.Guard(600, 200, gameScene)).vx = 3;
-    (new ENTITY.Guard(600, 200, gameScene)).vx = 5;
-    new ENTITY.Guard(600, 200, gameScene);
-    new ENTITY.Guard(600, 500, gameScene);
-    new ENTITY.Guard(600, 300, gameScene);
-    //new ENTITY.Player(200, 300, gameScene);
-    (new ENTITY.Guard(300, 300, gameScene)).vx = -0.1;
-    (new ENTITY.Guard(300, 300, gameScene)).vx = 5;
-    new ENTITY.Guard(300, 300, gameScene);
-    (new ENTITY.Guard(600, 300, gameScene)).vx = 3;
-    (new ENTITY.Guard(600, 300, gameScene)).vx = 5;
-    new ENTITY.Guard(600, 300, gameScene);
-    new ENTITY.Guard(700, 500, gameScene);
-    new ENTITY.Guard(700, 300, gameScene);
-    (new ENTITY.Guard(300, 200, gameScene)).vx = -0.1;
-    (new ENTITY.Guard(300, 200, gameScene)).vx = 5;
-    new ENTITY.Guard(300, 200, gameScene);
-    (new ENTITY.Guard(600, 200, gameScene)).vx = 3;
-
+    WORLD.init();
+    WORLD.loadLevel(JSON.parse('{"blocks":[[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,1,1,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,4,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,4,0,0,4,0,0,4,4,0,0,4,0,0,4,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,4,0,0,4,0,0,4,4,0,0,4,0,0,4,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,4,0,0,0,0,0,4,4,0,0,0,0,0,4,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,1,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,0,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,0,1,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,1,1,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,2],[0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],[0,0,0,0,0,0,0,0,0,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]],"objects":[{"name":"guard","x":271.4,"y":220,"properties":[]},{"name":"guard","x":265,"y":220,"properties":[]},{"name":"guard","x":300,"y":220,"properties":[]},{"name":"guard","x":620,"y":200,"properties":[]},{"name":"guard","x":620,"y":200,"properties":[]},{"name":"guard","x":600,"y":220,"properties":[]}],"spawn":{"x":435,"y":20.15},"background":"background.png","gravity":0.45,"maxSpeed":10}'));
 
     INTERFACE.setup();
 
@@ -136,9 +96,9 @@ function levelEditor() {
         return;
     }
     if(INPUT.pressed(KEYS.W)) {
-        var l = window.prompt("Current blocks:", JSON.stringify(WORLD.blocks));
-        if(l != null)
-            WORLD.blocks = JSON.parse(l);
-        WORLD.updateTextures();
+        var l = window.prompt("Current blocks:", JSON.stringify(WORLD.dumpLevel()));
+        //if(l != null)
+        //    WORLD.blocks = JSON.parse(l);
+        //WORLD.updateTextures();
     }
 }

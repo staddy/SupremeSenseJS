@@ -477,6 +477,7 @@ ENTITY.AI.isFloor = function(e) {
 };
 
 ENTITY.Guard = function(x, y, scene) {
+    this.name = "guard";
     var textures = [];
     for(var i = 1; i <= 8; ++i) {
         textures.push(PIXI.Texture.fromFrame('character' + i + '.png'));
