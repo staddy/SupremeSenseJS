@@ -52,12 +52,17 @@ ENTITY.Object = function(category, lifeTime) {
             WORLD.enemyBullets.push(this);
             break;
     }
+
+    this.previous = [];
+    this.previousLength = 0;
 };
 ENTITY.Object.prototype.tick = function() {
     if(this.lifeTime > 0)
         --this.lifeTime;
     else if(this.lifeTime == 0)
         this.removed = true;
+};
+ENTITY.Object.prototype.back = function() {
 };
 
 ENTITY.LevelObject = function(x, y, scene, width, height, category, lifeTime) {
@@ -77,6 +82,22 @@ ENTITY.LevelObject.prototype.tick = function() {
         this.selection.width = this.width;
         this.selection.height = this.height;
     }
+    if(this.previousLength >= MAX_REWIND)
+        this.previous.shift();
+    else
+        ++this.previousLength;
+    this.previous.push({x: this.x, y: this.y});
+};
+ENTITY.LevelObject.prototype.back = function() {
+    ENTITY.LevelObject.super.back.call(this);
+    if(this.previousLength == 0) {
+        this.removed = true;
+        return;
+    }
+    var p = this.previous.pop();
+    --this.previousLength;
+    this.x = p.x;
+    this.y = p.y;
 };
 
 ENTITY.SpriteObject = function(x, y, sprite, scene, category, lifeTime) {
@@ -90,6 +111,11 @@ ENTITY.SpriteObject = function(x, y, sprite, scene, category, lifeTime) {
 extend(ENTITY.SpriteObject, ENTITY.LevelObject);
 ENTITY.SpriteObject.prototype.tick = function() {
     ENTITY.SpriteObject.super.tick.call(this);
+    this.sprite.x = this.x;
+    this.sprite.y = this.y;
+};
+ENTITY.SpriteObject.prototype.back = function() {
+    ENTITY.SpriteObject.super.back.call(this);
     this.sprite.x = this.x;
     this.sprite.y = this.y;
 };

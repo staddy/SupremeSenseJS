@@ -79,7 +79,8 @@ WORLD.initTextures = function() {
         [PIXI.Texture.fromFrame('wall.png')],
         [PIXI.Texture.fromFrame('dirt1.png'), PIXI.Texture.fromFrame('dirt2.png'), PIXI.Texture.fromFrame('dirt3.png'), PIXI.Texture.fromFrame('dirt4.png'), PIXI.Texture.fromFrame('dirt5.png'), PIXI.Texture.fromFrame('dirt6.png'), PIXI.Texture.fromFrame('dirt7.png'), PIXI.Texture.fromFrame('dirt8.png'), PIXI.Texture.fromFrame('dirt9.png'), PIXI.Texture.fromFrame('dirt10.png'), PIXI.Texture.fromFrame('dirt11.png'), PIXI.Texture.fromFrame('dirt12.png')],
         [PIXI.Texture.fromFrame('grass.png')],
-        [PIXI.Texture.fromFrame('step.png')]
+        [PIXI.Texture.fromFrame('step.png')],
+        [PIXI.Texture.fromFrame('up1.png'), PIXI.Texture.fromFrame('up2.png')]
     ];
 };
 
@@ -131,6 +132,7 @@ WORLD.updateTextures = function() {
 2 - dirt
 3 - grass
 4 - step
+5 - stream
  */
 
 WORLD.isFree = function(xa, ya, e) {
@@ -160,6 +162,8 @@ WORLD.isFree = function(xa, ya, e) {
             if(((b >= 1) && (b <= 3)) ||
                 ((b == 4) && ((e.y + e.height) <= j * WORLD.TILE) && (ya > 0) && ((e.category == ENTITY.CATEGORIES.PLAYER) || (e.category == ENTITY.CATEGORIES.ENEMY)) && (e.down == false))) {
                 return false;
+            } else if(b == 5) {
+                e.vy -= WORLD.GRAVITY / 2;
             }
         }
     }
@@ -213,14 +217,14 @@ WORLD.tick = function() {
     if(time <= 0) {
         for (i = 0; i < WORLD.X; ++i) {
             for (var j = 0; j < WORLD.Y; ++j) {
-                if(WORLD.blocks[i][j] == 2) {
+                var b = WORLD.blocks[i][j];
                     if(Math.random() > 0.3) {
-                        var t = WORLD.textures[2].indexOf(WORLD.sprites[i][j].texture);
+                        var t = WORLD.textures[b].indexOf(WORLD.sprites[i][j].texture);
                         ++t;
-                        t %= 12;
-                        WORLD.sprites[i][j].texture = WORLD.textures[2][t];
+                        t %= WORLD.textures[b].length;
+                        WORLD.sprites[i][j].texture = WORLD.textures[b][t];
                     }
-                }
+                //}
             }
         }
         time = 5;
@@ -251,6 +255,16 @@ WORLD.tick = function() {
         var e = WORLD.entities[i];
         if(!e.removed)
             e.tick();
+        else
+            WORLD.remove(e);
+    }
+};
+
+WORLD.back = function() {
+    for(i = 0; i < WORLD.entities.length; ++i) {
+        var e = WORLD.entities[i];
+        if(!e.removed)
+            e.back();
         else
             WORLD.remove(e);
     }
