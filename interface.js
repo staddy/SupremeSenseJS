@@ -23,6 +23,46 @@ INTERFACE.right = undefined;
 INTERFACE.selection = null;
 INTERFACE.selected = null;
 
+INTERFACE.currentBlock = 0;
+INTERFACE.blockSelector = null;
+INTERFACE.blockSelection = null;
+
+INTERFACE.initBlockEditor = function() {
+    INTERFACE.blockSelector = new PIXI.Container();
+    var blackRect = new PIXI.Graphics();
+    blackRect.beginFill(0x000000, 1);
+    blackRect.drawRect(0, 0, WIDTH / 2, HEIGHT / 2);
+    INTERFACE.blockSelector.addChild(blackRect);
+    for(var i = 0; i < WORLD.textures.length; ++i) {
+        var sprite = new PIXI.Sprite();
+        sprite.texture = WORLD.textures[i][0];
+        sprite.scale.x = sprite.scale.y = SCALE;
+        INTERFACE.blockSelector.addChild(sprite);
+        var xLength = WIDTH / WORLD.TILE - 2;
+        sprite.x = (i % xLength + 1) * WORLD.TILE;
+        sprite.y = Math.floor(i / xLength + 1) * WORLD.TILE;
+        sprite.blockIndex = i;
+        sprite.interactive = true;
+        sprite.click = function() {INTERFACE.selectBlock(this.blockIndex)};
+    }
+    INTERFACE.interfaceStage.addChild(INTERFACE.blockSelector);
+    INTERFACE.blockSelector.x = WIDTH / 4;
+    INTERFACE.blockSelector.y = HEIGHT / 4;
+
+    var s = new PIXI.Graphics();
+    s.lineStyle(SCALE, 0xFFFF00);
+    s.drawRect(0, 0, WORLD.TILE, WORLD.TILE);
+    INTERFACE.blockSelector.addChild(s);
+    INTERFACE.blockSelection = s;
+    INTERFACE.selectBlock(0);
+};
+INTERFACE.selectBlock = function(i) {
+    INTERFACE.currentBlock = i;
+    var xLength = WIDTH / WORLD.TILE - 2;
+    INTERFACE.blockSelection.x = (i % xLength + 1) * WORLD.TILE;
+    INTERFACE.blockSelection.y = Math.floor(i / xLength + 1) * WORLD.TILE;
+};
+
 INTERFACE.EVENTS = {PHRASE: undefined, PORTRAIT: 0};
 INTERFACE.event = function(object, category, right) {
     this.object = object;

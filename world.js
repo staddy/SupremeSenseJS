@@ -75,7 +75,7 @@ WORLD.setBackground = function(b) {
 
 WORLD.initTextures = function() {
     WORLD.textures = [
-        [null],
+        [PIXI.Texture.fromFrame('null.png')],
         [PIXI.Texture.fromFrame('wall.png')],
         [PIXI.Texture.fromFrame('dirt1.png'), PIXI.Texture.fromFrame('dirt2.png'), PIXI.Texture.fromFrame('dirt3.png'), PIXI.Texture.fromFrame('dirt4.png'), PIXI.Texture.fromFrame('dirt5.png'), PIXI.Texture.fromFrame('dirt6.png'), PIXI.Texture.fromFrame('dirt7.png'), PIXI.Texture.fromFrame('dirt8.png'), PIXI.Texture.fromFrame('dirt9.png'), PIXI.Texture.fromFrame('dirt10.png'), PIXI.Texture.fromFrame('dirt11.png'), PIXI.Texture.fromFrame('dirt12.png')],
         [PIXI.Texture.fromFrame('grass.png')],
