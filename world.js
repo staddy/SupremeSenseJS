@@ -21,6 +21,15 @@ WORLD.dumpLevel = function() {
 };
 
 WORLD.loadLevel = function(level) {
+    gameScene.removeChildren();
+
+    WORLD.entities = [];
+    WORLD.enemies = [];
+    WORLD.playerBullets = [];
+    WORLD.enemyBullets = [];
+    WORLD.player = {};
+    WORLD.backgroundName = null;
+
     WORLD.blocks = level.blocks;
     WORLD.setBackground(level.background);
     WORLD.GRAVITY = level.gravity;
@@ -156,20 +165,21 @@ WORLD.isFree = function(xa, ya, e) {
     if((my) == Math.floor(my)) --y2;
     if(y2 >= WORLD.Y) y2 = WORLD.Y - 1;
 
+    var retVal = true;
     for(var i = x1; i <= x2; ++i) {
         for(var j = y1; j <= y2; ++j) {
             var b = WORLD.blocks[i][j];
             if(((b >= 1) && (b <= 3)) ||
                 ((b == 4) && ((e.y + e.height) <= j * WORLD.TILE) && (ya > 0) && ((e.category == ENTITY.CATEGORIES.PLAYER) || (e.category == ENTITY.CATEGORIES.ENEMY)) && (e.down == false))) {
-                return false;
+                retVal = false;
             } else if(b == 5) {
-                e.vy -= WORLD.GRAVITY / 2;
+                e.vy -= WORLD.GRAVITY;
             }
         }
     }
 
 
-    return true;
+    return retVal;
 };
 
 WORLD.areCollide = function(r1, r2) {

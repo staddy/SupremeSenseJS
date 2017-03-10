@@ -318,7 +318,7 @@
 "meta": {
 	"app": "http://www.codeandweb.com/texturepacker",
 	"version": "1.0",
-	"image": "textures.png?v=0.0.8",
+	"image": "textures.png?v=0.0.9",
 	"format": "RGBA8888",
 	"size": {"w":400,"h":325},
 	"scale": "1",

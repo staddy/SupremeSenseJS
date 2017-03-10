@@ -13,7 +13,9 @@ KEYS = {
     D: 9,
     Q: 10,
     W: 11,
-    R: 12
+    R: 12,
+    B: 13,
+    E: 14
 };
 
 CODES = {
@@ -29,7 +31,9 @@ CODES = {
     68: KEYS.D,
     81: KEYS.Q,
     87: KEYS.W,
-    82: KEYS.R
+    82: KEYS.R,
+    66: KEYS.B,
+    69: KEYS.E
 };
 
 INPUT.down = [];
@@ -96,12 +100,5 @@ INPUT.onTouch = function(eventData) {
 };
 
 INPUT.onDown = function(ex, ey) {
-    INTERFACE.removeSelection();
-    for(i = 0; i < WORLD.entities.length; ++i) {
-        var e = WORLD.entities[i];
-        if(WORLD.areCollide({x: ex, y: ey, width: 1, height: 1}, e)) {
-            INTERFACE.select(e);
-            break;
-        }
-    }
+
 };

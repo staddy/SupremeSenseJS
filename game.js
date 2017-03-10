@@ -29,7 +29,12 @@ var gameScene;
 // current game state
 var state;
 
+var portrait;
+
 function setup() {
+    portrait = new PIXI.Sprite(PIXI.Texture.fromFrame('face.png'));
+    portrait.scale.x = portrait.scale.y = 5;
+
     stage = new PIXI.Container();
     INPUT.initMouseEvents(stage);
 
@@ -44,8 +49,8 @@ function setup() {
 
     state = play;
 
-    var portrait = new PIXI.Sprite(PIXI.Texture.fromFrame('face.png'));
-    portrait.scale.x = portrait.scale.y = 5;
+    // start fps-meter
+    fpsmeter.tickStart();
 
     /*INTERFACE.push(portrait, INTERFACE.EVENTS.PORTRAIT, true);
     INTERFACE.push('Я вперше зустрів Діна незабаром після того,\nяк ми з дружиною розлучилися.');
@@ -61,9 +66,9 @@ function setup() {
     INTERFACE.push('Не давайте святыни псам и не бросайте жемчуга\nвашего перед свиньями, чтобы они не попрали его\nногами своими и, обратившись, не растерзали вас.');
 
     INTERFACE.tell();*/
-
-    // start fps-meter
-    fpsmeter.tickStart();
+    INTERFACE.push(portrait, INTERFACE.EVENTS.PORTRAIT, true);
+    INTERFACE.push('Квантовая запущенность');
+    INTERFACE.tell();
 
     // start the game loop
     gameLoop();
@@ -84,13 +89,14 @@ function gameLoop() {
 function play() {
     if(INPUT.pressed(KEYS.Q)) {
         state = levelEditor;
-        return;
-    }
-    if(INPUT.down[KEYS.R] && rewindTime < MAX_REWIND) {
+    } else if(INPUT.down[KEYS.R] && rewindTime < MAX_REWIND) {
         WORLD.back();
         ++rewindTime;
-    }
-    else {
+    } else if(INPUT.pressed(KEYS.B)) {
+        INTERFACE.switchEditor();
+    } else if(INPUT.pressed(KEYS.E)) {
+        INTERFACE.editBlocks = true;
+    } else {
         if(rewindTime > 0)
             --rewindTime;
         WORLD.tick();
@@ -104,12 +110,16 @@ function end() {
 function levelEditor() {
     if(INPUT.pressed(KEYS.Q)) {
         state = play;
-        return;
-    }
-    if(INPUT.pressed(KEYS.W)) {
+    } else if(INPUT.pressed(KEYS.D)) {
+        if(INTERFACE.selected != null) {
+            var s = INTERFACE.selected;
+            INTERFACE.removeSelection();
+            WORLD.remove(s);
+        }
+    } else if(INPUT.pressed(KEYS.W)) {
         var l = window.prompt("Current blocks:", JSON.stringify(WORLD.dumpLevel()));
-        //if(l != null)
-        //    WORLD.blocks = JSON.parse(l);
-        //WORLD.updateTextures();
+        if(l != null)
+            WORLD.loadLevel(JSON.parse(l));
+        INPUT.down[KEYS.W] = false;
     }
 }

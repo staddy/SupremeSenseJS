@@ -20,12 +20,14 @@ INTERFACE.text = null;
 INTERFACE.portrait = null;
 INTERFACE.right = undefined;
 
-INTERFACE.selection = null;
-INTERFACE.selected = null;
+INTERFACE.selection = null;         // рамка вокруг объекта
+INTERFACE.selected = null;          // выбранный объект
 
-INTERFACE.currentBlock = 0;
-INTERFACE.blockSelector = null;
-INTERFACE.blockSelection = null;
+INTERFACE.currentBlock = 0;         // номер выбранного блока
+INTERFACE.blockSelector = null;     // меню блоков
+INTERFACE.blockSelection = null;    // рамка вокруг блока
+INTERFACE.blockEditor = false;      // показывается ли меню блоков
+INTERFACE.editBlocks = false;       // редактируются ли блоки мира по клику
 
 INTERFACE.initBlockEditor = function() {
     INTERFACE.blockSelector = new PIXI.Container();
@@ -45,9 +47,6 @@ INTERFACE.initBlockEditor = function() {
         sprite.interactive = true;
         sprite.click = function() {INTERFACE.selectBlock(this.blockIndex)};
     }
-    INTERFACE.interfaceStage.addChild(INTERFACE.blockSelector);
-    INTERFACE.blockSelector.x = WIDTH / 4;
-    INTERFACE.blockSelector.y = HEIGHT / 4;
 
     var s = new PIXI.Graphics();
     s.lineStyle(SCALE, 0xFFFF00);
@@ -55,7 +54,36 @@ INTERFACE.initBlockEditor = function() {
     INTERFACE.blockSelector.addChild(s);
     INTERFACE.blockSelection = s;
     INTERFACE.selectBlock(0);
+
+    gameScene.interactive = true;
+    gameScene.click = function(interactionData) {
+        var dX = interactionData.data.global.x - gameScene.x;
+        var dY = interactionData.data.global.y - gameScene.y;
+        if(INTERFACE.editBlocks) {
+            WORLD.setBlock(Math.floor(dX / WORLD.TILE), Math.floor(dY / WORLD.TILE), INTERFACE.currentBlock);
+        } else {
+            INTERFACE.removeSelection();
+            for (i = 0; i < WORLD.entities.length; ++i) {
+                var e = WORLD.entities[i];
+                if (WORLD.areCollide({x: dX, y: dY, width: 1, height: 1}, e)) {
+                    INTERFACE.select(e);
+                    break;
+                }
+            }
+        }
+    };
 };
+
+INTERFACE.switchEditor = function() {
+    INTERFACE.blockEditor = !INTERFACE.blockEditor;
+    if(INTERFACE.blockEditor) {
+        INTERFACE.interfaceStage.addChild(INTERFACE.blockSelector);
+        INTERFACE.blockSelector.x = WIDTH / 4;
+        INTERFACE.blockSelector.y = HEIGHT / 4;
+    } else
+        INTERFACE.interfaceStage.removeChild(INTERFACE.blockSelector);
+};
+
 INTERFACE.selectBlock = function(i) {
     INTERFACE.currentBlock = i;
     var xLength = WIDTH / WORLD.TILE - 2;
@@ -108,12 +136,12 @@ INTERFACE.setup = function() {
     INTERFACE.upFrame = new PIXI.Container();
     INTERFACE.upFrame.addChild(blackRect);
     INTERFACE.upFrame.y = -INTERFACE.frameHeight;
-    gameScene.addChild(INTERFACE.upFrame);
+    stage.addChild(INTERFACE.upFrame);
 
     INTERFACE.downFrame = new PIXI.Container();
     INTERFACE.downFrame.addChild(blackRect);
     INTERFACE.downFrame.y = HEIGHT;
-    gameScene.addChild(INTERFACE.downFrame);
+    stage.addChild(INTERFACE.downFrame);
 
     INTERFACE.interfaceStage = new PIXI.Container();
 
@@ -131,7 +159,7 @@ INTERFACE.setup = function() {
     INTERFACE.energyBar.position.y = INTERFACE.border * SCALE + 10 + 5;
     INTERFACE.interfaceStage.addChild(INTERFACE.energyBar);
 
-    gameScene.addChild(INTERFACE.interfaceStage);
+    stage.addChild(INTERFACE.interfaceStage);
 };
 
 INTERFACE.setHealth = function(value, maxValue) {
@@ -171,8 +199,8 @@ INTERFACE.telling = function() {
     if(INTERFACE.frameAnimationTick != 0) {
         var dy = HEIGHT / 2 - WORLD.player.y;
         var d = (Math.abs(dy) > INTERFACE.frameHeight ? Math.sign(dy) * INTERFACE.frameHeight : dy) / INTERFACE.frameAnimationTicks;
-        INTERFACE.upFrame.y += (INTERFACE.frameHeight / INTERFACE.frameAnimationTicks - d);
-        INTERFACE.downFrame.y -= (INTERFACE.frameHeight / INTERFACE.frameAnimationTicks + d);
+        INTERFACE.upFrame.y += (INTERFACE.frameHeight / INTERFACE.frameAnimationTicks);
+        INTERFACE.downFrame.y -= (INTERFACE.frameHeight / INTERFACE.frameAnimationTicks);
 
         gameScene.y += d;
         --INTERFACE.frameAnimationTick;
