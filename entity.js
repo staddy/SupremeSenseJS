@@ -1,14 +1,23 @@
 var ENTITY = {};
 
-ENTITY.Animation = function(frameTime, loop, textures, sequence, entity) {
+ENTITY.Animation = function(frameTime, loop, textures, entity, sequence) {
     this.frameTime = frameTime;
     this.loop = loop;
     this.textures = textures;
-    this.sequence = sequence;
+    if(sequence != undefined)
+        this.sequence = sequence;
+    else {
+        this.sequence = [];
+        for(var i = 0; i < textures.length; ++i)
+            this.sequence.push(i);
+    }
     this.entity = entity;
     this.currentFrame = 0;
     this.currentTick = 0;
     this.play = true;
+
+    this.previous = [];
+    this.previousLength = 0;
 
     this.reset = function() {
         this.currentFrame = 0;
@@ -31,6 +40,26 @@ ENTITY.Animation = function(frameTime, loop, textures, sequence, entity) {
             entity.sprite.texture = this.textures[this.sequence[this.currentFrame]];
             ++this.currentTick;
         }
+
+        if(this.previousLength >= MAX_REWIND)
+            this.previous.shift();
+        else
+            ++this.previousLength;
+        this.previous.push({frameTime: this.frameTime, loop: this.loop, currentFrame: this.currentFrame, currentTick: this.currentTick, play: this.play});
+    };
+
+    this.back = function() {
+        if(this.previousLength == 0) {
+            return;
+        }
+        var p = this.previous.pop();
+        --this.previousLength;
+        this.frameTime = p.frameTime;
+        this.loop = p.loop;
+        this.currentFrame = p.currentFrame;
+        this.currentTick = p.currentTick;
+        this.play = p.play;
+        entity.sprite.texture = this.textures[this.sequence[this.currentFrame]];
     };
 };
 
@@ -129,6 +158,67 @@ ENTITY.SpriteObject.prototype.flip = function() {
     else
         this.sprite.anchor.x = 1;
 };
+
+ENTITY.AnimatedObject = function(x, y, animation, scene, category, lifeTime) {
+    ENTITY.AnimatedObject.super.constructor.call(this, x, y, new PIXI.Sprite(animation.textures[0]), scene, category, lifeTime);
+    this.animation = animation;
+};
+extend(ENTITY.AnimatedObject, ENTITY.SpriteObject);
+ENTITY.AnimatedObject.prototype.tick = function() {
+    ENTITY.AnimatedObject.super.tick.call(this);
+    this.animation.tick();
+};
+ENTITY.AnimatedObject.prototype.back = function() {
+    ENTITY.AnimatedObject.super.back.call(this);
+    this.animation.back();
+};
+
+ENTITY.RoamingAnimatedObject = function(x, y, dx, dy, animation, scene, category, lifeTime) {
+    ENTITY.RoamingAnimatedObject.super.constructor.call(this, x, y, animation, scene, category, lifeTime);
+    this.startX = x;
+    this.startY = y;
+    this.dX = dx;
+    this.dY = dy;
+    this.dirRigh = Math.random() > 0.5;
+    this.dirDown = Math.random() > 0.5;
+};
+extend(ENTITY.RoamingAnimatedObject, ENTITY.AnimatedObject);
+ENTITY.RoamingAnimatedObject.prototype.tick = function() {
+    ENTITY.RoamingAnimatedObject.super.tick.call(this);
+    if(this.dirRigh && this.x <= (this.startX + this.dX)) {
+        if (Math.random() > 0.9)
+            ++this.x;
+    } else if(!this.dirRigh && this.x >= (this.startX - this.dX)) {
+        if (Math.random() > 0.9)
+            --this.x;
+    } else
+        this.dirRigh = !this.dirRigh;
+
+    if(this.dirDown && this.y <= (this.startY + this.dY)) {
+        if (Math.random() > 0.9)
+            ++this.y;
+    } else if(!this.dirDown && this.y >= (this.startY - this.dY)) {
+        if (Math.random() > 0.9)
+            --this.y;
+    } else
+        this.dirDown = !this.dirDown;
+
+    if(Math.random() > 0.99)
+        this.dirRigh = !this.dirRigh;
+    if(Math.random() > 0.99)
+        this.dirDown = !this.dirDown;
+};
+
+ENTITY.Animation1 = function(x, y, scene) {
+    this.name = "animation1";
+    var textures = [];
+    for(var i = 1; i <= 4; ++i) {
+        textures.push(PIXI.Texture.fromFrame('hornet' + i + '.png'));
+    }
+    ENTITY.Animation1.super.constructor.call(this, x, y, 20, 20, new ENTITY.Animation(8, true, textures, this), scene, ENTITY.CATEGORIES.NONE, -1);
+};
+extend(ENTITY.Animation1, ENTITY.RoamingAnimatedObject);
+
 
 ENTITY.PhysicalObject = function(x, y, sprite, scene, category, lifeTime) {
     ENTITY.PhysicalObject.super.constructor.call(this, x, y, sprite, scene, category, lifeTime);
@@ -435,7 +525,7 @@ ENTITY.Player = function(x, y, scene) {
     for(var i = 1; i <= 8; ++i) {
         textures.push(PIXI.Texture.fromFrame('character' + i + '.png'));
     }
-    this.animation = new ENTITY.Animation(4, true, textures, [0, 1, 2, 3, 4, 5, 6, 7], this);
+    this.animation = new ENTITY.Animation(4, true, textures, this);
     ENTITY.Player.super.constructor.call(this, x, y, scene, textures, ENTITY.CATEGORIES.PLAYER, -1);
     WORLD.player = this;
     this.weapon = new ENTITY.WEAPONS.Knife(scene, this, ENTITY.CATEGORIES.PLAYERBULLET, 10);
@@ -492,6 +582,10 @@ ENTITY.Player.prototype.tick = function() {
 
     INTERFACE.setHealth(this.health, this.maxHealth);
     INTERFACE.setEnergy(this.energy, this.maxEnergy);
+};
+ENTITY.Player.prototype.back = function() {
+    ENTITY.Player.super.back.call(this);
+    this.animation.back();
 };
 
 ENTITY.AI = {};

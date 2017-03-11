@@ -40,7 +40,7 @@ INTERFACE.initBlockEditor = function() {
         sprite.texture = WORLD.textures[i][0];
         sprite.scale.x = sprite.scale.y = SCALE;
         INTERFACE.blockSelector.addChild(sprite);
-        var xLength = WIDTH / WORLD.TILE - 2;
+        var xLength = (WIDTH / 2) / WORLD.TILE - 2;
         sprite.x = (i % xLength + 1) * WORLD.TILE;
         sprite.y = Math.floor(i / xLength + 1) * WORLD.TILE;
         sprite.blockIndex = i;
@@ -133,13 +133,17 @@ INTERFACE.setup = function() {
     blackRect.beginFill(0x000000, 1);
     blackRect.drawRect(0, 0, WIDTH, INTERFACE.frameHeight);
 
+    var blackRect2 = new PIXI.Graphics();
+    blackRect2.beginFill(0x000000, 1);
+    blackRect2.drawRect(0, 0, WIDTH, INTERFACE.frameHeight);
+
     INTERFACE.upFrame = new PIXI.Container();
     INTERFACE.upFrame.addChild(blackRect);
     INTERFACE.upFrame.y = -INTERFACE.frameHeight;
     stage.addChild(INTERFACE.upFrame);
 
     INTERFACE.downFrame = new PIXI.Container();
-    INTERFACE.downFrame.addChild(blackRect);
+    INTERFACE.downFrame.addChild(blackRect2);
     INTERFACE.downFrame.y = HEIGHT;
     stage.addChild(INTERFACE.downFrame);
 

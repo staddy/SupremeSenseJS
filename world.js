@@ -88,8 +88,45 @@ WORLD.initTextures = function() {
         [PIXI.Texture.fromFrame('wall.png')],
         [PIXI.Texture.fromFrame('dirt1.png'), PIXI.Texture.fromFrame('dirt2.png'), PIXI.Texture.fromFrame('dirt3.png'), PIXI.Texture.fromFrame('dirt4.png'), PIXI.Texture.fromFrame('dirt5.png'), PIXI.Texture.fromFrame('dirt6.png'), PIXI.Texture.fromFrame('dirt7.png'), PIXI.Texture.fromFrame('dirt8.png'), PIXI.Texture.fromFrame('dirt9.png'), PIXI.Texture.fromFrame('dirt10.png'), PIXI.Texture.fromFrame('dirt11.png'), PIXI.Texture.fromFrame('dirt12.png')],
         [PIXI.Texture.fromFrame('grass.png')],
+        [PIXI.Texture.fromFrame('black.png')],
+        [PIXI.Texture.fromFrame('black.png')],
+        [PIXI.Texture.fromFrame('black.png')],
+        [PIXI.Texture.fromFrame('black.png')],
+        [PIXI.Texture.fromFrame('black.png')],
+        [PIXI.Texture.fromFrame('black.png')],
+        [PIXI.Texture.fromFrame('black.png')],
+        [PIXI.Texture.fromFrame('black.png')],
+        [PIXI.Texture.fromFrame('black.png')],
+        [PIXI.Texture.fromFrame('black.png')],
+        [PIXI.Texture.fromFrame('black.png')],
+        [PIXI.Texture.fromFrame('black.png')],
+        [PIXI.Texture.fromFrame('black.png')],
+        [PIXI.Texture.fromFrame('black.png')],
+        [PIXI.Texture.fromFrame('black.png')],
+        [PIXI.Texture.fromFrame('black.png')],
+        [PIXI.Texture.fromFrame('black.png')],
         [PIXI.Texture.fromFrame('step.png')],
-        [PIXI.Texture.fromFrame('up1.png'), PIXI.Texture.fromFrame('up2.png')]
+        [PIXI.Texture.fromFrame('up1.png'), PIXI.Texture.fromFrame('up2.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('null.png')],
+        [PIXI.Texture.fromFrame('turret1.png'), PIXI.Texture.fromFrame('turret2.png'), PIXI.Texture.fromFrame('turret3.png')],
+        [PIXI.Texture.fromFrame('insects1.png'), PIXI.Texture.fromFrame('insects2.png'), PIXI.Texture.fromFrame('insects3.png'), PIXI.Texture.fromFrame('insects4.png'), PIXI.Texture.fromFrame('insects5.png')]
     ];
 };
 
@@ -140,8 +177,12 @@ WORLD.updateTextures = function() {
 1 - wall
 2 - dirt
 3 - grass
-4 - step
-5 - stream
+4 - 20 - reserved
+21 - step
+22 - stream
+23 - 40 - reserved
+41 - turret
+42 - insects
  */
 
 WORLD.isFree = function(xa, ya, e) {
@@ -169,10 +210,10 @@ WORLD.isFree = function(xa, ya, e) {
     for(var i = x1; i <= x2; ++i) {
         for(var j = y1; j <= y2; ++j) {
             var b = WORLD.blocks[i][j];
-            if(((b >= 1) && (b <= 3)) ||
-                ((b == 4) && ((e.y + e.height) <= j * WORLD.TILE) && (ya > 0) && ((e.category == ENTITY.CATEGORIES.PLAYER) || (e.category == ENTITY.CATEGORIES.ENEMY)) && (e.down == false))) {
+            if(((b >= 1) && (b <= 20)) ||
+                ((b == 21) && ((e.y + e.height) <= j * WORLD.TILE) && (ya > 0) && ((e.category == ENTITY.CATEGORIES.PLAYER) || (e.category == ENTITY.CATEGORIES.ENEMY)) && (e.down == false))) {
                 retVal = false;
-            } else if(b == 5) {
+            } else if(b == 22) {
                 e.vy -= WORLD.GRAVITY;
             }
         }

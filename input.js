@@ -15,7 +15,8 @@ KEYS = {
     W: 11,
     R: 12,
     B: 13,
-    E: 14
+    E: 14,
+    F: 15
 };
 
 CODES = {
@@ -33,7 +34,8 @@ CODES = {
     87: KEYS.W,
     82: KEYS.R,
     66: KEYS.B,
-    69: KEYS.E
+    69: KEYS.E,
+    70: KEYS.F
 };
 
 INPUT.down = [];
