@@ -4,6 +4,8 @@ var rewindTime = 0;
 
 // fpsmeter
 var fpsmeter = new FPSMeter({ decimals: 0, graph: true, theme: 'dark', left: '5px' });
+var showFpsmeter = false;
+fpsmeter.hide();
 
 // pixel scaling
 PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
@@ -50,12 +52,12 @@ function setup() {
 
     new ENTITY.Animation1(150, 50, gameScene);
     new ENTITY.Animation1(200, 30, gameScene);
+    new ENTITY.Animation2(0, 0, gameScene);
 
     state = play;
 
     // start fps-meter
     fpsmeter.tickStart();
-    fpsmeter.hide();
 
     /*INTERFACE.push(portrait, INTERFACE.EVENTS.PORTRAIT, true);
     INTERFACE.push('Я вперше зустрів Діна незабаром після того,\nяк ми з дружиною розлучилися.');
@@ -101,6 +103,12 @@ function play() {
         INTERFACE.switchEditor();
     } else if(INPUT.pressed(KEYS.E)) {
         INTERFACE.editBlocks = !INTERFACE.editBlocks;
+    } else if(INPUT.pressed(KEYS.F)) {
+        showFpsmeter = !showFpsmeter;
+        if(showFpsmeter)
+            fpsmeter.show();
+        else
+            fpsmeter.hide();
     } else {
         if(rewindTime > 0)
             --rewindTime;

@@ -86,7 +86,7 @@ INTERFACE.switchEditor = function() {
 
 INTERFACE.selectBlock = function(i) {
     INTERFACE.currentBlock = i;
-    var xLength = WIDTH / WORLD.TILE - 2;
+    var xLength = (WIDTH / 2) / WORLD.TILE - 2;
     INTERFACE.blockSelection.x = (i % xLength + 1) * WORLD.TILE;
     INTERFACE.blockSelection.y = Math.floor(i / xLength + 1) * WORLD.TILE;
 };

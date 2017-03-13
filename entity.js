@@ -129,6 +129,20 @@ ENTITY.LevelObject.prototype.back = function() {
     this.y = p.y;
 };
 
+ENTITY.DamageBox = function(x, y, scene, width, height, category, lifeTime, damage) {
+    ENTITY.DamageBox.super.constructor.call(this, x, y, scene, width, height, category, lifeTime);
+    this.damage = damage;
+    this.canHit = true;
+};
+extend(ENTITY.DamageBox, ENTITY.LevelObject);
+ENTITY.DamageBox.prototype.collide = function(e) {
+    if(e.hasOwnProperty('health') && this.canHit) {
+        e.health -= this.damage;
+        this.canHit = false;
+        this.removed = true;
+    }
+};
+
 ENTITY.SpriteObject = function(x, y, sprite, scene, category, lifeTime) {
     sprite.scale.x = sprite.scale.y = SCALE;
     ENTITY.SpriteObject.super.constructor.call(this, x, y, scene, sprite.width, sprite.height, category, lifeTime);
@@ -219,6 +233,15 @@ ENTITY.Animation1 = function(x, y, scene) {
 };
 extend(ENTITY.Animation1, ENTITY.RoamingAnimatedObject);
 
+ENTITY.Animation2 = function(x, y, scene) {
+    this.name = "animation2";
+    var textures = [];
+    for(var i = 1; i <= 5; ++i) {
+        textures.push(PIXI.Texture.fromFrame('smoke' + i + '.png'));
+    }
+    ENTITY.Animation2.super.constructor.call(this, x, y, new ENTITY.Animation(16, true, textures, this), scene, ENTITY.CATEGORIES.NONE, -1);
+};
+extend(ENTITY.Animation2, ENTITY.AnimatedObject);
 
 ENTITY.PhysicalObject = function(x, y, sprite, scene, category, lifeTime) {
     ENTITY.PhysicalObject.super.constructor.call(this, x, y, sprite, scene, category, lifeTime);
@@ -566,7 +589,7 @@ ENTITY.Player.prototype.tick = function() {
         this.down = true;
     }
     else {
-        if(WORLD.isFree(0, -20, this)) {
+        if(WORLD.isFree(0, -20, {x: this.x, y: this.y, width: this.width, height: this.height})) {
             if(this.height == 20) {
                 this.y -= 20;
                 this.sprite.y -= 20;
@@ -625,6 +648,10 @@ ENTITY.Guard.prototype.hitWall = function(xa, ya) {
     } else {
         ENTITY.Guard.super.hitWall.call(this, xa, ya);
     }
+};
+
+ENTITY.Slime = function(x, y, scene) {
+
 };
 
 ENTITY.Blood = function(x, y, scene) {

@@ -214,7 +214,8 @@ WORLD.isFree = function(xa, ya, e) {
                 ((b == 21) && ((e.y + e.height) <= j * WORLD.TILE) && (ya > 0) && ((e.category == ENTITY.CATEGORIES.PLAYER) || (e.category == ENTITY.CATEGORIES.ENEMY)) && (e.down == false))) {
                 retVal = false;
             } else if(b == 22) {
-                e.vy -= WORLD.GRAVITY;
+                if(e.hasOwnProperty('vy'))
+                    e.vy -= WORLD.GRAVITY;
             }
         }
     }
