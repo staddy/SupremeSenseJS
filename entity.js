@@ -360,7 +360,7 @@ ENTITY.BULLETS.Blade.prototype.collide = function(e) {
 };
 
 ENTITY.Person = function(x, y, scene, textures, category, lifeTime) {
-    ENTITY.Person.super.constructor.call(this, x, y, new PIXI.Sprite(textures[3]), scene, category, lifeTime);
+    ENTITY.Person.super.constructor.call(this, x, y, new PIXI.Sprite(textures[0]), scene, category, lifeTime);
     this.runs = false;
     this.canRun = true;
 
@@ -651,7 +651,51 @@ ENTITY.Guard.prototype.hitWall = function(xa, ya) {
 };
 
 ENTITY.Slime = function(x, y, scene) {
+    var textures = [];
+    for(var i = 1; i <= 3; ++i) {
+        textures.push(PIXI.Texture.fromFrame('slime' + i + '.png'));
+    }
+    this.animation = new ENTITY.Animation(8, true, textures, this);
+    ENTITY.Slime.super.constructor.call(this, x, y, scene, textures, ENTITY.CATEGORIES.ENEMY, -1);
+    this.jumpTimer = 0;
+    this.damageTimer = 0;
+    this.jumpCooldown = 60;
+    this.damageCooldown = 30;
+    this.jumpSpeed = 10;
+};
+extend(ENTITY.Slime, ENTITY.Person);
+ENTITY.Slime.prototype.tick = function() {
+    ENTITY.Slime.super.tick.call(this);
+    this.animation.tick();
+    this.width = this.sprite.width;
+    this.y += (this.height - this.sprite.height);
+    this.sprite.y = this.y;
+    this.height = this.sprite.height;
 
+    if(this.jumpTimer < this.jumpCooldown)
+        ++this.jumpTimer;
+    if(this.damageTimer < this.damageCooldown)
+        ++this.damageTimer;
+
+    if(this.canRun) {
+        if(this.onGround) {
+            if(this.jumpTimer >= this.jumpCooldown)
+                if(Math.random() > 0.9) {
+                    this.vx += Math.random() * 3 * Math.sign(WORLD.player.x - this.x);
+                    this.vy = -this.jumpSpeed * (0.5 + 0.5 * Math.random());
+                    this.jumpTimer = 0;
+                }
+        }
+    }
+    if(this.damageTimer >= this.damageCooldown)
+        if(WORLD.areCollide(this, WORLD.player)) {
+            new ENTITY.DamageBox(this.x, this.y, this.scene, this.width, this.height, ENTITY.CATEGORIES.ENEMYBULLET, 1, 20);
+            this.damageTimer = 0;
+        }
+};
+ENTITY.Slime.prototype.back = function() {
+    ENTITY.Slime.super.back.call(this);
+    this.animation.back();
 };
 
 ENTITY.Blood = function(x, y, scene) {

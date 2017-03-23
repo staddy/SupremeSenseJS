@@ -54,6 +54,9 @@ function setup() {
     new ENTITY.Animation1(200, 30, gameScene);
     new ENTITY.Animation2(0, 0, gameScene);
 
+    new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
+
     state = play;
 
     // start fps-meter
