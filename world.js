@@ -133,7 +133,7 @@ WORLD.initTextures = function() {
 WORLD.init = function() {
     WORLD.WIDTH = WIDTH;
     WORLD.HEIGHT = HEIGHT;
-    WORLD.TILE = 20;
+    WORLD.TILE = 10 * SCALE;
     WORLD.X = WORLD.WIDTH / WORLD.TILE;
     WORLD.Y = WORLD.HEIGHT / WORLD.TILE;
     WORLD.initTextures();

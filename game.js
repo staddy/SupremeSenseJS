@@ -10,8 +10,8 @@ fpsmeter.hide();
 // pixel scaling
 PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
 
-var WIDTH = 800, HEIGHT = 600;
-var SCALE = 2;
+var WIDTH = 1200, HEIGHT = 900;
+var SCALE = 3;
 
 // renderer
 var renderer = PIXI.autoDetectRenderer(WIDTH, HEIGHT, {/*backgroundColor : 0x1099bb*/});
@@ -59,8 +59,8 @@ function setup() {
     new ENTITY.Slime(150, 50, gameScene);
     new ENTITY.Slime(150, 50, gameScene);
 
-    new ENTITY.WEAPONS.Gun(gameScene, null, ENTITY.CATEGORIES.PLAYERBULLET, 10, 450, 50);
-    new ENTITY.WEAPONS.ShotGun(gameScene, null, ENTITY.CATEGORIES.PLAYERBULLET, 10, 470, 50);
+    new ENTITY.WEAPONS.Gun(gameScene, null, ENTITY.CATEGORIES.PLAYERBULLET, 10, 750, 50);
+    new ENTITY.WEAPONS.ShotGun(gameScene, null, ENTITY.CATEGORIES.PLAYERBULLET, 10, 770, 50);
 
 
     state = play;
@@ -83,7 +83,7 @@ function setup() {
 
     INTERFACE.tell();*/
     INTERFACE.push(portrait, INTERFACE.EVENTS.PORTRAIT, true);
-    INTERFACE.push('C - бросить оружие');
+    INTERFACE.push('Квантовая запущенность');
     INTERFACE.tell();
 
     // start the game loop

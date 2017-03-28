@@ -198,6 +198,7 @@
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
             <key type="filename">background.png</key>
+            <key type="filename">city.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -207,6 +208,52 @@
                 <rect>100,75,200,150</rect>
                 <key>scale9Paddings</key>
                 <rect>100,75,200,150</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">black.png</key>
+            <key type="filename">dirt1.png</key>
+            <key type="filename">dirt10.png</key>
+            <key type="filename">dirt11.png</key>
+            <key type="filename">dirt12.png</key>
+            <key type="filename">dirt2.png</key>
+            <key type="filename">dirt3.png</key>
+            <key type="filename">dirt4.png</key>
+            <key type="filename">dirt5.png</key>
+            <key type="filename">dirt6.png</key>
+            <key type="filename">dirt7.png</key>
+            <key type="filename">dirt8.png</key>
+            <key type="filename">dirt9.png</key>
+            <key type="filename">grass.png</key>
+            <key type="filename">heal.png</key>
+            <key type="filename">hornet1.png</key>
+            <key type="filename">hornet2.png</key>
+            <key type="filename">hornet3.png</key>
+            <key type="filename">hornet4.png</key>
+            <key type="filename">insects1.png</key>
+            <key type="filename">insects2.png</key>
+            <key type="filename">insects3.png</key>
+            <key type="filename">insects4.png</key>
+            <key type="filename">insects5.png</key>
+            <key type="filename">null.png</key>
+            <key type="filename">slime3.png</key>
+            <key type="filename">slow.png</key>
+            <key type="filename">step.png</key>
+            <key type="filename">turret1.png</key>
+            <key type="filename">turret2.png</key>
+            <key type="filename">turret3.png</key>
+            <key type="filename">up1.png</key>
+            <key type="filename">up2.png</key>
+            <key type="filename">wall.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>3,3,5,5</rect>
+                <key>scale9Paddings</key>
+                <rect>3,3,5,5</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -270,35 +317,6 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">dirt1.png</key>
-            <key type="filename">dirt10.png</key>
-            <key type="filename">dirt11.png</key>
-            <key type="filename">dirt12.png</key>
-            <key type="filename">dirt2.png</key>
-            <key type="filename">dirt3.png</key>
-            <key type="filename">dirt4.png</key>
-            <key type="filename">dirt5.png</key>
-            <key type="filename">dirt6.png</key>
-            <key type="filename">dirt7.png</key>
-            <key type="filename">dirt8.png</key>
-            <key type="filename">dirt9.png</key>
-            <key type="filename">grass.png</key>
-            <key type="filename">heal.png</key>
-            <key type="filename">slow.png</key>
-            <key type="filename">step.png</key>
-            <key type="filename">wall.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>3,3,5,5</rect>
-                <key>scale9Paddings</key>
-                <rect>3,3,5,5</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
             <key type="filename">face.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
@@ -322,6 +340,75 @@
                 <rect>3,1,5,3</rect>
                 <key>scale9Paddings</key>
                 <rect>3,1,5,3</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">shotgun.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>3,1,6,2</rect>
+                <key>scale9Paddings</key>
+                <rect>3,1,6,2</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">shotgunbullet.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>1,0,1,1</rect>
+                <key>scale9Paddings</key>
+                <rect>1,0,1,1</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">slime1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>3,2,5,4</rect>
+                <key>scale9Paddings</key>
+                <rect>3,2,5,4</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">slime2.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>3,2,5,5</rect>
+                <key>scale9Paddings</key>
+                <rect>3,2,5,5</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">smoke1.png</key>
+            <key type="filename">smoke2.png</key>
+            <key type="filename">smoke3.png</key>
+            <key type="filename">smoke4.png</key>
+            <key type="filename">smoke5.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>8,5,17,9</rect>
+                <key>scale9Paddings</key>
+                <rect>8,5,17,9</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>

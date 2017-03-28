@@ -298,6 +298,7 @@ ENTITY.PhysicalObject.prototype.tick = function() {
         this.vy += WORLD.GRAVITY;
     if(Math.abs(this.vy) >= WORLD.MAXSPEED) this.vy = Math.sign(this.vy) * WORLD.MAXSPEED;
     if(Math.abs(this.vx) >= WORLD.MAXSPEED) this.vx = Math.sign(this.vx) * WORLD.MAXSPEED;
+    WORLD.isFree(0, 0, this);   // to accelerate while on ground (blood still doesn't ???)
     this.tryMove(this.vx, this.vy);
 };
 ENTITY.PhysicalObject.prototype.hitWall = function(xa, ya) {
