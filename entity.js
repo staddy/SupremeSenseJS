@@ -1,4 +1,11 @@
 var ENTITY = {};
+ENTITY.GROUP = {
+    NONE: 0,
+    A: 1,
+    B: 2,
+    C: 4
+};
+ENTITY.currentId = 0;
 
 ENTITY.Animation = function(frameTime, loop, textures, entity, sequence) {
     this.frameTime = frameTime;
@@ -65,21 +72,23 @@ ENTITY.Animation = function(frameTime, loop, textures, entity, sequence) {
 
 ENTITY.Object = Class.extend({
     init: function(category, lifeTime) {
+        this.id = ENTITY.currentId++;
         this.removed = false;
         this.sprite = null;
         this.category = category;
         this.lifeTime = lifeTime;
         this.duration = lifeTime;
+        this.group = ENTITY.GROUP.NONE;
         WORLD.entities.push(this);
         switch (this.category) {
             case ENTITY.CATEGORIES.ENEMY:
-                WORLD.enemies.push(this);
+                this.group |= ENTITY.GROUP.B;
                 break;
             case ENTITY.CATEGORIES.PLAYERBULLET:
-                WORLD.playerBullets.push(this);
+                this.group |= ENTITY.GROUP.B;
                 break;
             case ENTITY.CATEGORIES.ENEMYBULLET:
-                WORLD.enemyBullets.push(this);
+                this.group |= ENTITY.GROUP.A;
                 break;
         }
 
@@ -482,6 +491,7 @@ ENTITY.WEAPONS.Knife = ENTITY.Skill.extend({
 ENTITY.WEAPONS.Gun = ENTITY.PhysicalObject.extend({
     init: function (scene, e, category, damage, x, y) {
         this._super(0, 0, new PIXI.Sprite(PIXI.Texture.fromFrame('gun.png')), scene, category, -1);
+        this.group = ENTITY.GROUP.NONE;
         this.name = "gun";
         this.damage = damage;
         this.timer = 0;
@@ -528,6 +538,7 @@ ENTITY.WEAPONS.Gun = ENTITY.PhysicalObject.extend({
 ENTITY.WEAPONS.ShotGun = ENTITY.PhysicalObject.extend({
     init: function (scene, e, category, damage, x, y) {
         this._super(0, 0, new PIXI.Sprite(PIXI.Texture.fromFrame('shotgun.png')), scene, category, -1);
+        this.group = ENTITY.GROUP.NONE;
         this.name = "shotgun";
         this.damage = damage;
         this.timer = 0;
@@ -648,6 +659,7 @@ ENTITY.Player = ENTITY.Person.extend({
         //this.weapon = new ENTITY.WEAPONS.Gun(scene, this, ENTITY.CATEGORIES.PLAYERBULLET, 10);
         this.weapon = new ENTITY.WEAPONS.ShotGun(scene, this, ENTITY.CATEGORIES.PLAYERBULLET, 10);
         this.dash = new ENTITY.Skill(this, ENTITY.EFFECTS.Dash, 30, 30);
+        this.group |= ENTITY.GROUP.A;
     },
     tick: function () {
         this._super();

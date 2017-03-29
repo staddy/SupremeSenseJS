@@ -1,11 +1,9 @@
 var WORLD = {};
 
 WORLD.entities = [];
-WORLD.enemies = [];
-WORLD.playerBullets = [];
-WORLD.enemyBullets = [];
 WORLD.player = {};
 WORLD.backgroundName = null;
+WORLD.cellSize = 100;
 
 WORLD.Level = function(blocks, objects, spawn, background, gravity, maxSpeed) {
     this.blocks = blocks;
@@ -24,9 +22,6 @@ WORLD.loadLevel = function(level) {
     gameScene.removeChildren();
 
     WORLD.entities = [];
-    WORLD.enemies = [];
-    WORLD.playerBullets = [];
-    WORLD.enemyBullets = [];
     WORLD.player = {};
     WORLD.backgroundName = null;
 
@@ -283,26 +278,26 @@ WORLD.tick = function() {
     }
     --time;
 
-    WORLD.enemyBullets.forEach(
-        function(b) {
-            if(WORLD.areCollide(b, WORLD.player)) {
-                WORLD.player.collide(b);
-                b.collide(WORLD.player);
-            }
-        }
-    );
-    WORLD.playerBullets.forEach(
-        function(b) {
-            WORLD.enemies.forEach(
-                function(e) {
-                    if(WORLD.areCollide(b, e)) {
-                        e.collide(b);
-                        b.collide(e);
-                    }
-                }
-            )
-        }
-    );
+    //WORLD.enemyBullets.forEach(
+    //    function(b) {
+    //        if(WORLD.areCollide(b, WORLD.player)) {
+    //            WORLD.player.collide(b);
+    //            b.collide(WORLD.player);
+    //        }
+    //    }
+    //);
+    //WORLD.playerBullets.forEach(
+    //    function(b) {
+    //        WORLD.enemies.forEach(
+    //            function(e) {
+    //                if(WORLD.areCollide(b, e)) {
+    //                    e.collide(b);
+    //                    b.collide(e);
+    //                }
+    //            }
+    //        )
+    //    }
+    //);
     for(i = 0; i < WORLD.entities.length; ++i) {
         var e = WORLD.entities[i];
         if(!e.removed)
@@ -310,6 +305,51 @@ WORLD.tick = function() {
         else
             WORLD.remove(e);
     }
+
+    var hash = {};
+    for(var e = 0; e < WORLD.entities.length; e++) {
+        var entity = WORLD.entities[e];
+
+        // Skip entities that don't check, don't get checked and don't collide
+        if(entity.group == ENTITY.GROUP.NONE) {
+            continue;
+        }
+
+        var checked = {},
+            xmin = Math.floor( entity.x/WORLD.cellSize ),
+            ymin = Math.floor( entity.y/WORLD.cellSize ),
+            xmax = Math.floor( (entity.x+entity.width)/WORLD.cellSize ) + 1,
+            ymax = Math.floor( (entity.y+entity.height)/WORLD.cellSize ) + 1;
+
+        for( var x = xmin; x < xmax; x++ ) {
+            for( var y = ymin; y < ymax; y++ ) {
+
+                // Current cell is empty - create it and insert!
+                if( !hash[x] ) {
+                    hash[x] = {};
+                    hash[x][y] = [entity];
+                }
+                else if( !hash[x][y] ) {
+                    hash[x][y] = [entity];
+                }
+
+                // Check against each entity in this cell, then insert
+                else {
+                    var cell = hash[x][y];
+                    for( var c = 0; c < cell.length; c++ ) {
+
+                        // Intersects and wasn't already checkd?
+                        if( (entity.group & cell[c].group) && WORLD.areCollide(entity, cell[c]) && !checked[cell[c].id] ) {
+                            checked[cell[c].id] = true;
+                            entity.collide(cell[c]);
+                            cell[c].collide(entity);
+                        }
+                    }
+                    cell.push(entity);
+                }
+            } // end for y size
+        } // end for x size
+    } // end for entities
 };
 
 WORLD.back = function() {
@@ -325,20 +365,6 @@ WORLD.back = function() {
 WORLD.remove = function(e) {
     e.removed = true;
     WORLD.entities.splice(WORLD.entities.indexOf(e), 1);
-    switch(e.category) {
-        case ENTITY.CATEGORIES.ENEMY:
-            // todo
-            WORLD.enemies.splice(WORLD.enemies.indexOf(e), 1);
-            break;
-        case ENTITY.CATEGORIES.PLAYERBULLET:
-            // todo
-            WORLD.playerBullets.splice(WORLD.playerBullets.indexOf(e), 1);
-            break;
-        case ENTITY.CATEGORIES.ENEMYBULLET:
-            //todo
-            WORLD.enemyBullets.splice(WORLD.enemyBullets.indexOf(e), 1);
-            break;
-    }
     if(e.sprite != null) {
         e.sprite.visible = false;
         gameScene.removeChild(e.sprite);
