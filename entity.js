@@ -70,7 +70,7 @@ ENTITY.Animation = function(frameTime, loop, textures, entity, sequence) {
     };
 };
 
-ENTITY.Object = Class.extend({
+declareClass(ENTITY, Class, 'Object', {
     init: function(category, lifeTime) {
         this.id = ENTITY.currentId++;
         this.removed = false;
@@ -105,7 +105,7 @@ ENTITY.Object = Class.extend({
     }
 });
 
-ENTITY.LevelObject = ENTITY.Object.extend({
+declareClass(ENTITY, 'Object', 'LevelObject', {
     init: function (x, y, scene, width, height, category, lifeTime) {
         this._super(category, lifeTime);
         this.x = x;
@@ -142,7 +142,7 @@ ENTITY.LevelObject = ENTITY.Object.extend({
     }
 });
 
-ENTITY.DamageBox = ENTITY.LevelObject.extend({
+declareClass(ENTITY, 'LevelObject', 'DamageBox', {
     init: function (x, y, scene, width, height, category, lifeTime, damage) {
         this._super(x, y, scene, width, height, category, lifeTime);
         this.name = "damagebox";
@@ -158,7 +158,7 @@ ENTITY.DamageBox = ENTITY.LevelObject.extend({
     }
 });
 
-ENTITY.SpriteObject = ENTITY.LevelObject.extend({
+declareClass(ENTITY, 'LevelObject', 'SpriteObject', {
         init: function (x, y, sprite, scene, category, lifeTime) {
             sprite.scale.x = sprite.scale.y = SCALE;
             this._super(x, y, scene, sprite.width, sprite.height, category, lifeTime);
@@ -189,7 +189,7 @@ ENTITY.SpriteObject = ENTITY.LevelObject.extend({
     }
 });
 
-ENTITY.AnimatedObject = ENTITY.SpriteObject.extend({
+declareClass(ENTITY, 'SpriteObject', 'AnimatedObject', {
     init: function (x, y, animation, scene, category, lifeTime) {
         this._super(x, y, new PIXI.Sprite(animation.textures[0]), scene, category, lifeTime);
         this.animation = animation;
@@ -204,7 +204,7 @@ ENTITY.AnimatedObject = ENTITY.SpriteObject.extend({
     }
 });
 
-ENTITY.RoamingAnimatedObject = ENTITY.AnimatedObject.extend({
+declareClass(ENTITY, 'AnimatedObject', 'RoamingAnimatedObject', {
     init: function (x, y, dx, dy, animation, scene, category, lifeTime) {
         this._super(x, y, animation, scene, category, lifeTime);
         this.startX = x;
@@ -241,7 +241,7 @@ ENTITY.RoamingAnimatedObject = ENTITY.AnimatedObject.extend({
     }
 });
 
-ENTITY.Animation1 = ENTITY.RoamingAnimatedObject.extend({
+declareClass(ENTITY, 'RoamingAnimatedObject', 'Animation1', {
     init: function (x, y, scene) {
         this.name = "animation1";
         var textures = [];
@@ -252,7 +252,7 @@ ENTITY.Animation1 = ENTITY.RoamingAnimatedObject.extend({
     }
 });
 
-ENTITY.Animation2 = ENTITY.AnimatedObject.extend({
+declareClass(ENTITY, 'AnimatedObject', 'Animation2', {
     init: function(x, y, scene) {
         this.name = "animation2";
         var textures = [];
@@ -263,7 +263,7 @@ ENTITY.Animation2 = ENTITY.AnimatedObject.extend({
     }
 });
 
-ENTITY.PhysicalObject = ENTITY.SpriteObject.extend({
+declareClass(ENTITY, 'SpriteObject', 'PhysicalObject', {
     init: function (x, y, sprite, scene, category, lifeTime) {
         this._super(x, y, sprite, scene, category, lifeTime);
         this.vx = 0;
@@ -333,7 +333,7 @@ ENTITY.PhysicalObject = ENTITY.SpriteObject.extend({
 });
 
 ENTITY.BULLETS = {};
-ENTITY.BULLETS.Blade = ENTITY.SpriteObject.extend({
+declareClass(ENTITY.BULLETS, ENTITY.SpriteObject, 'Blade', {
     init: function(scene, damage, e, category) {
         //fixme (texture or filename???)
         this._super(0, 0, new PIXI.Sprite(PIXI.Texture.fromFrame('blade.png')), scene, category, 10);
@@ -383,7 +383,7 @@ ENTITY.BULLETS.Blade = ENTITY.SpriteObject.extend({
     }
 });
 
-ENTITY.Person = ENTITY.PhysicalObject.extend({
+declareClass(ENTITY, 'PhysicalObject', 'Person', {
     init: function (x, y, scene, textures, category, lifeTime) {
         this._super(x, y, new PIXI.Sprite(textures[0]), scene, category, lifeTime);
         this.runs = false;
@@ -444,7 +444,7 @@ ENTITY.Person = ENTITY.PhysicalObject.extend({
     }
 });
 
-ENTITY.Skill = ENTITY.Object.extend({
+declareClass(ENTITY, 'Object', 'Skill', {
     init: function (entity, effect, cooldown, cost) {
         this._super(ENTITY.CATEGORIES.SKILL, -1);
         this.entity = entity;
@@ -470,7 +470,7 @@ ENTITY.Skill = ENTITY.Object.extend({
 });
 
 ENTITY.WEAPONS = {};
-ENTITY.WEAPONS.Knife = ENTITY.Skill.extend({
+declareClass(ENTITY.WEAPONS, ENTITY.Skill, 'Knife', {
     init: function (scene, e, category, damage) {
         this._super(e, ENTITY.BULLETS.Blade, 30, 0);
         this.name = "knife";
@@ -488,7 +488,7 @@ ENTITY.WEAPONS.Knife = ENTITY.Skill.extend({
 });
 
 // make abstract weapon class
-ENTITY.WEAPONS.Gun = ENTITY.PhysicalObject.extend({
+declareClass(ENTITY.WEAPONS, ENTITY.PhysicalObject, 'Gun', {
     init: function (scene, e, category, damage, x, y) {
         this._super(0, 0, new PIXI.Sprite(PIXI.Texture.fromFrame('gun.png')), scene, category, -1);
         this.group = ENTITY.GROUP.NONE;
@@ -535,7 +535,7 @@ ENTITY.WEAPONS.Gun = ENTITY.PhysicalObject.extend({
     }
 });
 
-ENTITY.WEAPONS.ShotGun = ENTITY.PhysicalObject.extend({
+declareClass(ENTITY.WEAPONS, ENTITY.PhysicalObject, 'ShotGun', {
     init: function (scene, e, category, damage, x, y) {
         this._super(0, 0, new PIXI.Sprite(PIXI.Texture.fromFrame('shotgun.png')), scene, category, -1);
         this.group = ENTITY.GROUP.NONE;
@@ -587,7 +587,7 @@ ENTITY.WEAPONS.ShotGun = ENTITY.PhysicalObject.extend({
 });
 
 ENTITY.EFFECTS = {};
-ENTITY.EFFECTS.Dash = ENTITY.Object.extend({
+declareClass(ENTITY.EFFECTS, ENTITY.Object, 'Dash', {
     init: function (e) {
         this._super(ENTITY.CATEGORIES.EFFECT, 5);
         this.name = "dash";
@@ -609,7 +609,7 @@ ENTITY.EFFECTS.Dash = ENTITY.Object.extend({
     }
 });
 
-ENTITY.EFFECTS.Slow = ENTITY.Object.extend({
+declareClass(ENTITY.EFFECTS, ENTITY.Object, 'Slow', {
     init: function (e) {
         this._super(ENTITY.CATEGORIES.EFFECT, 60 * 3);
         this.name = "slow";
@@ -627,7 +627,7 @@ ENTITY.EFFECTS.Slow = ENTITY.Object.extend({
     }
 });
 
-ENTITY.EFFECTS.KnockBack = ENTITY.Object.extend({
+declareClass(ENTITY.EFFECTS, ENTITY.Object, 'KnockBack', {
     init: function (e, s) {
         this._super(ENTITY.CATEGORIES.EFFECT, 15);
         this.name = "knockback";
@@ -645,7 +645,7 @@ ENTITY.EFFECTS.KnockBack = ENTITY.Object.extend({
     }
 });
 
-ENTITY.Player = ENTITY.Person.extend({
+declareClass(ENTITY, 'Person', 'Player', {
     init: function (x, y, scene) {
         var textures = [];
         for (var i = 1; i <= 8; ++i) {
@@ -732,7 +732,7 @@ ENTITY.AI.isFloor = function(e) {
     return !WORLD.isFree(0, 0, p);
 };
 
-ENTITY.Guard = ENTITY.Person.extend({
+declareClass(ENTITY, 'Person', 'Guard', {
     init: function(x, y, scene) {
         this.name = "guard";
         var textures = [];
@@ -764,7 +764,7 @@ ENTITY.Guard = ENTITY.Person.extend({
     }
 });
 
-ENTITY.Slime = ENTITY.Person.extend({
+declareClass(ENTITY, 'Person', 'Slime', {
     init: function (x, y, scene) {
         var textures = [];
         for (var i = 1; i <= 3; ++i) {
@@ -824,7 +824,7 @@ ENTITY.Slime = ENTITY.Person.extend({
 
 
 
-ENTITY.Blood = ENTITY.PhysicalObject.extend({
+declareClass(ENTITY, 'PhysicalObject', 'Blood', {
     init: function(x, y, scene) {
         this._super(x, y, new PIXI.Sprite(PIXI.Texture.fromFrame('blood.png')), scene, ENTITY.CATEGORIES.NONE, 60 * 3);
         this.name = "blood";
@@ -834,7 +834,7 @@ ENTITY.Blood = ENTITY.PhysicalObject.extend({
     }
 });
 
-ENTITY.Bullet = ENTITY.PhysicalObject.extend({
+declareClass(ENTITY, 'PhysicalObject', 'Bullet', {
     init: function (x1, y1, bxa, bya, scene, category) {
         this._super(x1, y1, new PIXI.Sprite(PIXI.Texture.fromFrame('bullet.png')), scene, category, 600);
         this.name = "bullet";
@@ -864,7 +864,7 @@ ENTITY.Bullet = ENTITY.PhysicalObject.extend({
     }
 });
 
-ENTITY.ShotgunBullet = ENTITY.PhysicalObject.extend({
+declareClass(ENTITY, 'PhysicalObject', 'ShotgunBullet', {
     init: function (x1, y1, bxa, bya, scene, category) {
         this._super(x1, y1, new PIXI.Sprite(PIXI.Texture.fromFrame('shotgunbullet.png')), scene, category, 600);
         this.name = "shotgunbullet";

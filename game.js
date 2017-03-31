@@ -52,12 +52,8 @@ function setup() {
     new ENTITY.Animation1(200, 30, gameScene);
     new ENTITY.Animation2(0, 0, gameScene);
 
-    new ENTITY.Slime(150, 50, gameScene);
-    new ENTITY.Slime(150, 50, gameScene);
-    new ENTITY.Slime(150, 50, gameScene);
-    new ENTITY.Slime(150, 50, gameScene);
-    new ENTITY.Slime(150, 50, gameScene);
-    new ENTITY.Slime(150, 50, gameScene);
+    var slim = new ENTITY.Slime(150, 50, gameScene);
+    alert(slim.className);
 
     new ENTITY.WEAPONS.Gun(gameScene, null, ENTITY.CATEGORIES.PLAYERBULLET, 10, 750, 50);
     new ENTITY.WEAPONS.ShotGun(gameScene, null, ENTITY.CATEGORIES.PLAYERBULLET, 10, 770, 50);

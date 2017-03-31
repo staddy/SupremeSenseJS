@@ -96,3 +96,9 @@ Class.extend = function(prop) {
 
     return Class;
 };
+
+function declareClass(namespace, parent, name, prop) {
+    var parentClass = typeof(parent) === 'string' ? namespace[parent] : parent;
+    prop.className = name;
+    namespace[name] = parentClass.extend(prop);
+}
