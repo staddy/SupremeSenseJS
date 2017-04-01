@@ -52,11 +52,30 @@ function setup() {
     new ENTITY.Animation1(200, 30, gameScene);
     new ENTITY.Animation2(0, 0, gameScene);
 
-    var slim = new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
+    new ENTITY.Slime(150, 50, gameScene);
 
-    new ENTITY.WEAPONS.Gun(gameScene, null, ENTITY.CATEGORIES.PLAYERBULLET, 10, 750, 50);
-    new ENTITY.WEAPONS.ShotGun(gameScene, null, ENTITY.CATEGORIES.PLAYERBULLET, 10, 770, 50);
+    new ENTITY.WEAPONS.ShotGun(gameScene, null, ENTITY.CATEGORIES.PLAYERBULLET, 10, 150, 50);
 
+    new ENTITY.WEAPONS.RustedGun(gameScene, null, ENTITY.CATEGORIES.PLAYERBULLET, 10, 670, 50);
+    new ENTITY.WEAPONS.Gun(gameScene, null, ENTITY.CATEGORIES.PLAYERBULLET, 10, 700, 50);
+    new ENTITY.WEAPONS.BetterGun(gameScene, null, ENTITY.CATEGORIES.PLAYERBULLET, 10, 730, 50);
+    new ENTITY.WEAPONS.MasterGun(gameScene, null, ENTITY.CATEGORIES.PLAYERBULLET, 10, 760, 50);
+    new ENTITY.WEAPONS.SecretGun(gameScene, null, ENTITY.CATEGORIES.PLAYERBULLET, 10, 820, 50);
 
     state = play;
 

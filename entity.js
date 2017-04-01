@@ -347,7 +347,7 @@ declareClass(ENTITY.BULLETS, ENTITY.SpriteObject, 'Blade', {
         this.entity.sid %= 8;
 
         this.x = this.entity.x + this.entity.width / 2 + (this.looksRight() ? 1 : -1);
-        this.y = this.entity.y + this.entity.height / 2 - 4;
+        this.y = this.entity.y + this.entity.height / 2 - 16;
         if(this.entity.looksRight() != this.looksRight()) {
             this.flip();
         }
@@ -400,6 +400,7 @@ declareClass(ENTITY, 'PhysicalObject', 'Person', {
         this.maxEnergy = 100;
         this.healthRegeneration = 0.1;
         this.energyRegeneration = 0.1;
+        this.weaponPoint = {x: this.width / 2, y: this.height / 2 - 4};
 
         // animation
         this.time = 0;
@@ -490,52 +491,6 @@ declareClass(ENTITY.WEAPONS, ENTITY.Skill, 'Knife', {
     }
 });
 
-// make abstract weapon class
-declareClass(ENTITY.WEAPONS, ENTITY.PhysicalObject, 'Gun', {
-    init: function (scene, e, category, damage, x, y) {
-        this._super(0, 0, new PIXI.Sprite(PIXI.Texture.fromFrame('gun.png')), scene, category, -1);
-        this.group = ENTITY.GROUP.NONE;
-        this.name = "gun";
-        this.damage = damage;
-        this.timer = 0;
-        this.cooldown = 30;
-        if (e != null) {
-            this.entity = e;
-            this.x = e.x + e.width / 2 + (e.looksRight() ? 0 : -this.width);
-            this.y = e.y + e.height / 2 - 4;
-            if (this.looksRight() != e.looksRight())
-                this.flip();
-        } else if (x != undefined && y != undefined) {
-            this.x = x;
-            this.y = y;
-        }
-    },
-    hit: function () {
-        if (this.timer <= 0) {
-            new ENTITY.Bullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? 11 : -11, 0, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
-            this.timer = this.cooldown;
-        }
-    },
-    tick: function () {
-        this._super();
-        if (this.entity != null) {
-            //ENTITY.SpriteObject.tick.call(this);
-            var e = this.entity;
-            this.x = e.x + e.width / 2 + (e.looksRight() ? 0 : -this.width);
-            this.y = e.y + e.height / 2 - 4;
-            if (this.looksRight() != e.looksRight())
-                this.flip();
-        } else {
-            if (WORLD.player.weapon == null && WORLD.areCollide(this, WORLD.player)) {
-                this.entity = WORLD.player;
-                WORLD.player.weapon = this;
-            }
-        }
-        if (this.timer > 0)
-            --this.timer;
-    }
-});
-
 declareClass(ENTITY.WEAPONS, ENTITY.PhysicalObject, 'Weapon', {
     _setEntity: function(entity) {
         this.entity = entity;
@@ -551,6 +506,7 @@ declareClass(ENTITY.WEAPONS, ENTITY.PhysicalObject, 'Weapon', {
         if (this.looksRight() != this.entity.looksRight())
             this.flip();
     },
+    name: "",
     action: function() {},
     init: function(sprite, scene, entity, cooldown, x, y) {
         this.width = sprite.width;                      // to calculate
@@ -574,7 +530,10 @@ declareClass(ENTITY.WEAPONS, ENTITY.PhysicalObject, 'Weapon', {
             this._setPosition();
         } else {
             // ПЕРЕДЕЛАТЬ
+            if (this.onGround)
+                this.vx *= 0.9;
             if (WORLD.player.weapon == null && WORLD.areCollide(this, WORLD.player)) {
+                INTERFACE.weaponText.text = this.name;
                 this._setEntity(WORLD.player);
                 WORLD.player.weapon = this;
             }
@@ -591,6 +550,7 @@ declareClass(ENTITY.WEAPONS, ENTITY.PhysicalObject, 'Weapon', {
 });
 
 declareClass(ENTITY.WEAPONS, 'Weapon', 'ShotGun', {
+    name: "Священный дробовик древних",
     init: function (scene, e, category, damage, x, y) {
         this._super(new PIXI.Sprite(PIXI.Texture.fromFrame('shotgun.png')), scene, e, 30, x, y);
         this.damage = damage;
@@ -601,6 +561,72 @@ declareClass(ENTITY.WEAPONS, 'Weapon', 'ShotGun', {
         new ENTITY.ShotgunBullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? this.bulletSpeed : -this.bulletSpeed, Math.random() * this.maxDeviation - this.maxDeviation / 2, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
         new ENTITY.ShotgunBullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? this.bulletSpeed : -this.bulletSpeed, Math.random() * this.maxDeviation - this.maxDeviation / 2, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
         new ENTITY.ShotgunBullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? this.bulletSpeed : -this.bulletSpeed, Math.random() * this.maxDeviation - this.maxDeviation / 2, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
+    }
+});
+
+declareClass(ENTITY.WEAPONS, 'Weapon', 'RustedGun', {
+    name: "Ржавый пистолет новичка",
+    init: function (scene, e, category, damage, x, y) {
+        this._super(new PIXI.Sprite(PIXI.Texture.fromFrame('rusted_gun.png')), scene, e, 30, x, y);
+        this.damage = damage;
+        this.bulletSpeed = 9.0;
+        this.maxDeviation = 4.0;
+    },
+    action: function () {
+        new ENTITY.RustedBullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? 11 : -11, 0, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
+    }
+});
+
+declareClass(ENTITY.WEAPONS, 'Weapon', 'Gun', {
+    name: "Простейший пистолет убогого ученика",
+    init: function (scene, e, category, damage, x, y) {
+        this._super(new PIXI.Sprite(PIXI.Texture.fromFrame('gun.png')), scene, e, 20, x, y);
+        this.damage = damage;
+        this.bulletSpeed = 9.0;
+        this.maxDeviation = 4.0;
+    },
+    action: function () {
+        new ENTITY.Bullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? 11 : -11, 0, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
+    }
+});
+
+declareClass(ENTITY.WEAPONS, 'Weapon', 'BetterGun', {
+    name: "Пистолет подмастерья",
+    init: function (scene, e, category, damage, x, y) {
+        this._super(new PIXI.Sprite(PIXI.Texture.fromFrame('better_gun.png')), scene, e, 10, x, y);
+        this.damage = damage;
+        this.bulletSpeed = 9.0;
+        this.maxDeviation = 4.0;
+    },
+    action: function () {
+        new ENTITY.Bullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? 11 : -11, 0, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
+    }
+});
+
+declareClass(ENTITY.WEAPONS, 'Weapon', 'MasterGun', {
+    name: "Пистолет мастера",
+    init: function (scene, e, category, damage, x, y) {
+        this._super(new PIXI.Sprite(PIXI.Texture.fromFrame('master_gun.png')), scene, e, 5, x, y);
+        this.damage = damage;
+        this.bulletSpeed = 9.0;
+        this.maxDeviation = 4.0;
+    },
+    action: function () {
+        new ENTITY.Bullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? 11 : -11, 0, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
+    }
+});
+
+declareClass(ENTITY.WEAPONS, 'Weapon', 'SecretGun', {
+    name: "Пистолет секретного мастера",
+    init: function (scene, e, category, damage, x, y) {
+        this._super(new PIXI.Sprite(PIXI.Texture.fromFrame('secret_gun.png')), scene, e, 30, x, y);
+        this.damage = damage;
+        this.bulletSpeed = 9.0;
+        this.maxDeviation = 4.0;
+    },
+    action: function () {
+        new ENTITY.EFFECTS.KnockBack(this.entity, this);
+        new ENTITY.SecretBullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? 11 : -11, 0, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
     }
 });
 
@@ -651,7 +677,7 @@ declareClass(ENTITY.EFFECTS, ENTITY.Object, 'KnockBack', {
         this.name = "knockback";
         this.entity = e;
         this.entity.canRun = false;
-        this.entity.vx = (s.looksRight() ? 1 : -1) * 3;
+        this.entity.vx = (!s.looksRight() ? 1 : -1) * 7;
         this.entity.vy -= 3;
         this.entity.effects.push(this);
     },
@@ -671,11 +697,12 @@ declareClass(ENTITY, 'Person', 'Player', {
         }
         this.animation = new ENTITY.Animation(4, true, textures, this);
         this._super(x, y, scene, textures, ENTITY.CATEGORIES.PLAYER, -1);
+        this.weaponPoint = {x: this.width / 2, y: this.height / 2 - 16};
         this.name = "player";
         WORLD.player = this;
         //this.weapon = new ENTITY.WEAPONS.Knife(scene, this, ENTITY.CATEGORIES.PLAYERBULLET, 10);
         //this.weapon = new ENTITY.WEAPONS.Gun(scene, this, ENTITY.CATEGORIES.PLAYERBULLET, 10);
-        this.weapon = new ENTITY.WEAPONS.ShotGun(scene, this, ENTITY.CATEGORIES.PLAYERBULLET, 10);
+        this.weapon = null;//new ENTITY.WEAPONS.ShotGun(scene, this, ENTITY.CATEGORIES.PLAYERBULLET, 10);
         this.dash = new ENTITY.Skill(this, ENTITY.EFFECTS.Dash, 30, 30);
         this.group |= ENTITY.GROUP.A;
     },
@@ -708,6 +735,7 @@ declareClass(ENTITY, 'Person', 'Player', {
                 this.weapon.vy = -2.0;
                 this.weapon.entity = null;
                 this.weapon = null;
+                INTERFACE.weaponText.text = "";
             }
         }
         if (INPUT.down[KEYS.DOWN] && this.onGround && this.canRun) {
@@ -882,6 +910,24 @@ declareClass(ENTITY, 'PhysicalObject', 'Bullet', {
     }
 });
 
+declareClass(ENTITY, 'PhysicalObject', 'RustedBullet', {
+    init: function (x1, y1, bxa, bya, scene, category) {
+        this._super(x1, y1, new PIXI.Sprite(PIXI.Texture.fromFrame('bullet.png')), scene, category, 600);
+        this.width = this.sprite.width;
+        this.height = this.sprite.height;
+        this.vx = bxa / 2;
+        this.vy = bya / 2;
+        this.gravity = true;
+    },
+    hitWall: function (xa, ya) {
+        this.removed = true;
+    },
+    collide: function (e) {
+        this.removed = true;
+        e.health -= 10;
+    }
+});
+
 declareClass(ENTITY, 'PhysicalObject', 'ShotgunBullet', {
     init: function (x1, y1, bxa, bya, scene, category) {
         this._super(x1, y1, new PIXI.Sprite(PIXI.Texture.fromFrame('shotgunbullet.png')), scene, category, 600);
@@ -900,6 +946,27 @@ declareClass(ENTITY, 'PhysicalObject', 'ShotgunBullet', {
         new ENTITY.EFFECTS.Slow(e);
         new ENTITY.EFFECTS.KnockBack(e, this);
         e.health -= 5;
+    }
+});
+
+declareClass(ENTITY, 'PhysicalObject', 'SecretBullet', {
+    init: function (x1, y1, bxa, bya, scene, category) {
+        this._super(x1, y1, new PIXI.Sprite(PIXI.Texture.fromFrame('bullet.png')), scene, category, 600);
+        this.width = this.sprite.width;
+        this.height = this.sprite.height;
+        this.vx = bxa;
+        this.vy = bya;
+        this.gravity = false;
+    },
+    hitWall: function (xa, ya) {
+        this.removed = true;
+    },
+    collide: function (e) {
+        for(var i = 0; i < 100; ++i)
+            new ENTITY.Bullet(this.x + Math.random() * 10, this.y + Math.random() * 10, Math.random() * 22 - 11, Math.random() * 22 - 11, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
+        new ENTITY.EFFECTS.Slow(e);
+        new ENTITY.EFFECTS.KnockBack(e, this);
+        e.health -= 100;
     }
 });
 

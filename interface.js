@@ -29,6 +29,8 @@ INTERFACE.blockSelection = null;    // рамка вокруг блока
 INTERFACE.blockEditor = false;      // показывается ли меню блоков
 INTERFACE.editBlocks = false;       // редактируются ли блоки мира по клику
 
+INTERFACE.weaponText = {text: ""};
+
 INTERFACE.initBlockEditor = function() {
     INTERFACE.blockSelector = new PIXI.Container();
     var blackRect = new PIXI.Graphics();
@@ -162,6 +164,11 @@ INTERFACE.setup = function() {
     INTERFACE.energyBar.position.x = WIDTH - INTERFACE.healthBarPosition * SCALE - INTERFACE.border * SCALE;
     INTERFACE.energyBar.position.y = INTERFACE.border * SCALE + 10 + 5;
     INTERFACE.interfaceStage.addChild(INTERFACE.energyBar);
+
+    INTERFACE.weaponText = new PIXI.BitmapText('', INTERFACE.textStyle);
+    INTERFACE.weaponText.x = INTERFACE.border;
+    INTERFACE.weaponText.y = INTERFACE.border;
+    INTERFACE.interfaceStage.addChild(INTERFACE.weaponText);
 
     stage.addChild(INTERFACE.interfaceStage);
 };
