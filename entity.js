@@ -159,28 +159,31 @@ declareClass(ENTITY, 'LevelObject', 'DamageBox', {
 });
 
 declareClass(ENTITY, 'LevelObject', 'SpriteObject', {
-        init: function (x, y, sprite, scene, category, lifeTime) {
-            sprite.scale.x = sprite.scale.y = SCALE;
-            this._super(x, y, scene, sprite.width, sprite.height, category, lifeTime);
-            this.sprite = sprite;
-            this.sprite.x = x;
-            this.sprite.y = y;
-            scene.addChild(this.sprite);
-        },
-        tick: function () {
-            this._super();
-            this.sprite.x = this.x;
-            this.sprite.y = this.y;
-        },
-        back: function () {
-            this._super();
-            this.sprite.x = this.x;
-            this.sprite.y = this.y;
-        },
+    init: function (x, y, sprite, scene, category, lifeTime) {
+        sprite.scale.x = sprite.scale.y = SCALE;
+        this._super(x, y, scene, sprite.width, sprite.height, category, lifeTime);
+        this.sprite = sprite;
+        this.sprite.x = x;
+        this.sprite.y = y;
+        scene.addChild(this.sprite);
+    },
+    _setSprite: function() {
+        this.sprite.x = this.x;
+        this.sprite.y = this.y;
+    },
+    tick: function () {
+        this._super();
+        this._setSprite();
+    },
+    back: function () {
+        this._super();
+        this._setSprite();
+    },
     looksRight: function () {
         return this.sprite.scale.x > 0;
     },
     flip: function () {
+        this._setSprite();
         this.sprite.scale.x = -this.sprite.scale.x;
         if (this.looksRight())
             this.sprite.anchor.x = 0;
@@ -514,17 +517,15 @@ declareClass(ENTITY.WEAPONS, ENTITY.PhysicalObject, 'Gun', {
         }
     },
     tick: function () {
+        this._super();
         if (this.entity != null) {
             //ENTITY.SpriteObject.tick.call(this);
             var e = this.entity;
             this.x = e.x + e.width / 2 + (e.looksRight() ? 0 : -this.width);
             this.y = e.y + e.height / 2 - 4;
-            this.sprite.x = this.x;
-            this.sprite.y = this.y;
             if (this.looksRight() != e.looksRight())
                 this.flip();
         } else {
-            this._super();
             if (WORLD.player.weapon == null && WORLD.areCollide(this, WORLD.player)) {
                 this.entity = WORLD.player;
                 WORLD.player.weapon = this;
@@ -535,54 +536,71 @@ declareClass(ENTITY.WEAPONS, ENTITY.PhysicalObject, 'Gun', {
     }
 });
 
-declareClass(ENTITY.WEAPONS, ENTITY.PhysicalObject, 'ShotGun', {
-    init: function (scene, e, category, damage, x, y) {
-        this._super(0, 0, new PIXI.Sprite(PIXI.Texture.fromFrame('shotgun.png')), scene, category, -1);
-        this.group = ENTITY.GROUP.NONE;
-        this.name = "shotgun";
-        this.damage = damage;
-        this.timer = 0;
-        this.cooldown = 30;
-        this.bulletSpeed = 9.0;
-        this.maxDeviation = 4.0;
-        if (e != null) {
-            this.entity = e;
-            this.x = e.x + e.width / 2 + (e.looksRight() ? 0 : -this.width);
-            this.y = e.y + e.height / 2 - 4;
-            if (this.looksRight() != e.looksRight())
-                this.flip();
-        } else if (x != undefined && y != undefined) {
+declareClass(ENTITY.WEAPONS, ENTITY.PhysicalObject, 'Weapon', {
+    _setEntity: function(entity) {
+        this.entity = entity;
+        if(entity.weaponPoint === undefined)
+            this.point = {x: entity.width / 2, y: entity.height / 2};
+        else
+            this.point = entity.weaponPoint;
+        this.category = ENTITY.CATEGORIES.NONE;
+    },
+    _setPosition: function() {
+        this.x = this.entity.x + this.point.x + (this.entity.looksRight() ? 0 : -this.width);
+        this.y = this.entity.y + this.point.y;
+        if (this.looksRight() != this.entity.looksRight())
+            this.flip();
+    },
+    action: function() {},
+    init: function(sprite, scene, entity, cooldown, x, y) {
+        this.width = sprite.width;                      // to calculate
+        this.looksRight = function() { return true; };  // position
+        if(entity) {
+            this._setEntity(entity);
+            this._setPosition();
+        } else {
+            this.entity = null;
             this.x = x;
             this.y = y;
         }
+        delete this['looksRight'];
+        this._super(this.x, this.y, sprite, scene, this.category, -1);
+        this.cooldown = cooldown;
+        this.timer = 0;
     },
-    hit: function () {
-        if (this.timer <= 0) {
-            new ENTITY.ShotgunBullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? this.bulletSpeed : -this.bulletSpeed, Math.random() * this.maxDeviation - this.maxDeviation / 2, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
-            new ENTITY.ShotgunBullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? this.bulletSpeed : -this.bulletSpeed, Math.random() * this.maxDeviation - this.maxDeviation / 2, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
-            new ENTITY.ShotgunBullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? this.bulletSpeed : -this.bulletSpeed, Math.random() * this.maxDeviation - this.maxDeviation / 2, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
-            this.timer = this.cooldown;
-        }
-    },
-    tick: function () {
-        if (this.entity != null) {
-            //ENTITY.SpriteObject.tick.call(this);
-            var e = this.entity;
-            this.x = e.x + e.width / 2 + (e.looksRight() ? 0 : -this.width);
-            this.y = e.y + e.height / 2 - 4;
-            this.sprite.x = this.x;
-            this.sprite.y = this.y;
-            if (this.looksRight() != e.looksRight())
-                this.flip();
+    tick: function() {
+        this._super();
+        if (this.entity) {
+            this._setPosition();
         } else {
-            this._super();
+            // ПЕРЕДЕЛАТЬ
             if (WORLD.player.weapon == null && WORLD.areCollide(this, WORLD.player)) {
-                this.entity = WORLD.player;
+                this._setEntity(WORLD.player);
                 WORLD.player.weapon = this;
             }
         }
         if (this.timer > 0)
             --this.timer;
+    },
+    hit: function () {
+        if (this.timer <= 0) {
+            this.action();
+            this.timer = this.cooldown;
+        }
+    }
+});
+
+declareClass(ENTITY.WEAPONS, 'Weapon', 'ShotGun', {
+    init: function (scene, e, category, damage, x, y) {
+        this._super(new PIXI.Sprite(PIXI.Texture.fromFrame('shotgun.png')), scene, e, 30, x, y);
+        this.damage = damage;
+        this.bulletSpeed = 9.0;
+        this.maxDeviation = 4.0;
+    },
+    action: function () {
+        new ENTITY.ShotgunBullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? this.bulletSpeed : -this.bulletSpeed, Math.random() * this.maxDeviation - this.maxDeviation / 2, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
+        new ENTITY.ShotgunBullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? this.bulletSpeed : -this.bulletSpeed, Math.random() * this.maxDeviation - this.maxDeviation / 2, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
+        new ENTITY.ShotgunBullet(this.x + (this.looksRight() ? 7 : -7), this.y + 4, this.looksRight() ? this.bulletSpeed : -this.bulletSpeed, Math.random() * this.maxDeviation - this.maxDeviation / 2, this.scene, ENTITY.CATEGORIES.PLAYERBULLET);
     }
 });
 

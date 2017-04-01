@@ -53,7 +53,6 @@ function setup() {
     new ENTITY.Animation2(0, 0, gameScene);
 
     var slim = new ENTITY.Slime(150, 50, gameScene);
-    alert(slim.className);
 
     new ENTITY.WEAPONS.Gun(gameScene, null, ENTITY.CATEGORIES.PLAYERBULLET, 10, 750, 50);
     new ENTITY.WEAPONS.ShotGun(gameScene, null, ENTITY.CATEGORIES.PLAYERBULLET, 10, 770, 50);
