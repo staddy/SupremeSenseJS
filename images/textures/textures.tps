@@ -211,6 +211,21 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">better_gun.png</key>
+            <key type="filename">gun.png</key>
+            <key type="filename">rusted_gun.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>3,1,5,3</rect>
+                <key>scale9Paddings</key>
+                <rect>3,1,5,3</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">black.png</key>
             <key type="filename">dirt1.png</key>
             <key type="filename">dirt10.png</key>
@@ -330,16 +345,29 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">gun.png</key>
+            <key type="filename">master_gun.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>3,1,5,3</rect>
+                <rect>4,2,7,4</rect>
                 <key>scale9Paddings</key>
-                <rect>3,1,5,3</rect>
+                <rect>4,2,7,4</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">secret_gun.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>6,2,13,4</rect>
+                <key>scale9Paddings</key>
+                <rect>6,2,13,4</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
